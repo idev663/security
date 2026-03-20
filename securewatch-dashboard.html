@@ -484,6 +484,93 @@ canvas.donut{display:block;}
 .handoff-toggle{background:none;border:none;color:var(--muted);font:bold var(--fs-xs) var(--mono);padding:6px 10px;cursor:pointer;width:100%;text-align:left;letter-spacing:1px;}
 .handoff-toggle:hover{color:var(--accent);}
 .handoff-text{font:var(--fs-xs) var(--mono);color:var(--text);padding:4px 10px 8px;line-height:2;}
+
+/* ── FEATURE 5: TRIAGE SCORE ── */
+.triage-score{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.triage-bar{width:32px;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden;}
+.triage-fill{height:100%;border-radius:2px;transition:width 0.3s;}
+.triage-fp{background:var(--accent);}.triage-amb{background:var(--warn);}.triage-tp{background:var(--danger);}
+.triage-pct{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);white-space:nowrap;}
+.triage-detail{border-top:1px solid rgba(56,182,255,0.07);padding-top:8px;margin-top:8px;}
+.triage-detail-title{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;}
+.triage-row{display:flex;justify-content:space-between;font-size:var(--fs-xs);font-family:var(--mono);padding:2px 0;color:var(--muted);}
+.triage-row span:last-child{color:var(--text);}
+
+/* ── FEATURE 3: SOAR AUTOMATION FEED ── */
+.soar-feed{display:flex;flex-direction:column;gap:3px;overflow-y:auto;min-height:0;flex:1;padding:4px 0;}
+.soar-row{display:flex;align-items:flex-start;gap:6px;padding:4px 6px;border-radius:3px;background:rgba(255,255,255,0.02);font-size:var(--fs-xs);font-family:var(--mono);animation:slideIn 0.3s ease both;}
+.soar-icon{flex-shrink:0;}.soar-text{flex:1;color:var(--text);line-height:1.4;}.soar-time{color:var(--muted);flex-shrink:0;}
+.soar-badge{font-size:var(--fs-xs);padding:1px 5px;border-radius:2px;flex-shrink:0;letter-spacing:0.5px;}
+.soar-done{background:rgba(0,229,160,0.12);color:var(--accent);border:1px solid rgba(0,229,160,0.2);}
+.soar-pend{background:rgba(245,166,35,0.12);color:var(--warn);border:1px solid rgba(245,166,35,0.2);}
+.soar-fail{background:rgba(240,69,69,0.12);color:var(--danger);border:1px solid rgba(240,69,69,0.2);}
+
+/* ── FEATURE 7: EXECUTIVE KPI BAR ── */
+.exec-bar{display:none;align-items:center;justify-content:space-around;padding:8px 20px;background:color-mix(in srgb,var(--surface) 95%,#000);border-bottom:1px solid var(--border);flex-shrink:0;gap:10px;animation:fadeDown 0.3s ease both;}
+.exec-bar.open{display:flex;}
+.exec-kpi{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.exec-gauge{width:52px;height:52px;border-radius:50%;background:conic-gradient(rgba(255,255,255,0.07) 0deg);transition:background 0.6s;}
+.exec-label{font-size:var(--fs-xs);letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;text-align:center;}
+.exec-val{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text);}
+
+/* ── FEATURE 4: DETECTION COVERAGE GRID ── */
+.coverage-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:2px;margin-top:6px;}
+.cov-cell{height:10px;border-radius:1px;cursor:pointer;transition:opacity 0.12s;}
+.cov-cell:hover{opacity:0.65;}
+.cov-cell.gap{background:rgba(255,255,255,0.06);}.cov-cell.covered{background:rgba(56,182,255,0.38);}
+.cov-cell.active{background:rgba(245,166,35,0.65);}.cov-cell.hot{background:rgba(240,69,69,0.78);}
+.coverage-legend{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.cov-leg{font-size:var(--fs-xs);font-family:var(--mono);}
+.cov-gap{color:rgba(255,255,255,0.35);}.cov-covered{color:var(--info);}.cov-active{color:var(--warn);}.cov-hot{color:var(--danger);}
+
+/* ── FEATURE 2: THREAT HUNT WORKBENCH ── */
+.hunt-bar{display:flex;align-items:center;gap:5px;padding:5px 0 2px;flex-wrap:wrap;flex-shrink:0;}
+.hunt-select{font-family:var(--mono);font-size:var(--fs-xs);background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 5px;cursor:pointer;}
+.hunt-input{flex:1;font-family:var(--mono);font-size:var(--fs-xs);background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:3px;padding:3px 7px;min-width:80px;}
+.hunt-input:focus{outline:none;border-color:rgba(56,182,255,0.4);}
+.hunt-btn{font-family:var(--mono);font-size:var(--fs-xs);font-weight:600;padding:3px 10px;border-radius:3px;background:rgba(56,182,255,0.12);border:1px solid rgba(56,182,255,0.35);color:var(--info);cursor:pointer;transition:all 0.15s;}
+.hunt-btn:hover{background:rgba(56,182,255,0.22);}
+.hunt-chip{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 8px;border-radius:3px;cursor:pointer;}
+.hunt-chip.hc-alerts{background:rgba(240,69,69,0.15);color:var(--danger);border:1px solid rgba(240,69,69,0.3);}
+.hunt-chip.hc-iocs{background:rgba(245,166,35,0.15);color:var(--warn);border:1px solid rgba(245,166,35,0.3);}
+.hunt-chip.hc-logs{background:rgba(56,182,255,0.12);color:var(--info);border:1px solid rgba(56,182,255,0.3);}
+.hunt-presets{display:flex;align-items:center;gap:5px;flex-shrink:0;padding-bottom:5px;}
+.hunt-presets button{font-family:var(--mono);font-size:var(--fs-xs);background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 7px;cursor:pointer;}
+.hunt-presets button:hover{border-color:var(--muted);color:var(--text);}
+.preset-label{font-size:var(--fs-xs);color:var(--muted);letter-spacing:1px;}
+
+/* ── FEATURE 8: PACKET EVIDENCE ── */
+.detail-pcap{border-top:1px solid rgba(56,182,255,0.07);margin-top:10px;}
+.pcap-header{display:flex;justify-content:space-between;padding:8px 0 4px;cursor:pointer;font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;transition:color 0.15s;}
+.pcap-header:hover{color:var(--text);}
+.pcap-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:var(--fs-xs);margin-bottom:8px;}
+.pcap-table th{color:var(--muted);text-align:left;padding:2px 4px;border-bottom:1px solid var(--border);}
+.pcap-table td{padding:2px 4px;border-bottom:1px solid rgba(255,255,255,0.03);}
+.pcap-table tr:hover td{background:rgba(56,182,255,0.04);}
+.proto-tcp{color:var(--info);}.proto-udp{color:var(--accent);}.proto-icmp{color:var(--warn);}
+.hex-dump{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);white-space:pre;line-height:1.7;background:rgba(0,0,0,0.2);border-radius:3px;padding:6px 8px;margin-bottom:6px;overflow-x:auto;}
+.pcap-copy{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 10px;background:rgba(56,182,255,0.10);border:1px solid rgba(56,182,255,0.25);color:var(--info);border-radius:3px;cursor:pointer;}
+
+/* ── FEATURE 6: ACTOR DOSSIER ── */
+.actor-overlay{position:fixed;inset:0;background:rgba(4,13,20,0.5);z-index:700;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.actor-overlay.open{opacity:1;pointer-events:all;}
+.actor-panel{position:absolute;right:0;top:0;bottom:0;width:320px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;transform:translateX(100%);transition:transform 0.25s;}
+.actor-overlay.open .actor-panel{transform:translateX(0);}
+.actor-hdr{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.actor-flag{font-size:26px;flex-shrink:0;}
+.actor-name{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text);font-weight:600;}
+.actor-alias{font-size:var(--fs-xs);color:var(--muted);}
+.actor-sec-title{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;margin-top:10px;}
+.actor-ttp{display:inline-block;font-family:var(--mono);font-size:var(--fs-xs);padding:2px 6px;border-radius:3px;background:rgba(240,69,69,0.12);color:var(--danger);border:1px solid rgba(240,69,69,0.25);margin:2px;}
+.actor-tool{display:inline-block;font-family:var(--mono);font-size:var(--fs-xs);padding:2px 6px;border-radius:3px;background:rgba(245,166,35,0.10);color:var(--warn);border:1px solid rgba(245,166,35,0.2);margin:2px;}
+.actor-campaign{font-size:var(--fs-xs);font-family:var(--mono);color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(56,182,255,0.05);}
+.actor-close-btn{margin-left:auto;background:none;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 8px;cursor:pointer;font:var(--fs-xs) var(--mono);}
+.actor-close-btn:hover{color:var(--text);border-color:var(--muted);}
+.btn-actor{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 10px;background:rgba(0,229,160,0.10);border:1px solid rgba(0,229,160,0.3);color:var(--accent);border-radius:3px;cursor:pointer;transition:all 0.15s;}
+.btn-actor:hover{background:rgba(0,229,160,0.2);}
+
+/* ── FEATURE 1: LATERAL MOVEMENT GRAPH ── */
+.lm-card-canvas{width:100%;flex:1;min-height:0;display:block;cursor:crosshair;}
 </style>
 </head>
 <body>
@@ -502,6 +589,7 @@ canvas.donut{display:block;}
     <button class="icon-btn" id="dlBtn" title="Download dashboard">&#8595; SAVE</button>
     <button class="icon-btn" id="muteBtn">SND ON</button>
     <button class="icon-btn" id="kbdBtn">? KEY</button>
+    <button class="icon-btn" onclick="toggleExecBar()" title="Executive risk overview">EXEC</button>
     <div class="threatcon-badge" id="threatconBadge">
       <span class="threatcon-dot" id="threatconDot"></span>
       <span id="threatconLabel">THREATCON 5</span>
@@ -515,6 +603,14 @@ canvas.donut{display:block;}
   </div>
   <div class="topbar-accent" id="topbarAccent"></div>
 </nav>
+
+<!-- EXECUTIVE KPI BAR -->
+<div class="exec-bar" id="execBar">
+  <div class="exec-kpi"><div class="exec-gauge" id="eg0"></div><div class="exec-label">RISK SCORE</div><div class="exec-val" id="ev0">—</div></div>
+  <div class="exec-kpi"><div class="exec-gauge" id="eg1"></div><div class="exec-label">DET. COVERAGE</div><div class="exec-val" id="ev1">—%</div></div>
+  <div class="exec-kpi"><div class="exec-gauge" id="eg2"></div><div class="exec-label">EXPOSURE WINDOW</div><div class="exec-val" id="ev2">—</div></div>
+  <div class="exec-kpi"><div class="exec-gauge" id="eg3"></div><div class="exec-label">PLAYBOOK OPS</div><div class="exec-val" id="ev3">—%</div></div>
+</div>
 
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
@@ -589,9 +685,22 @@ canvas.donut{display:block;}
     </div>
     <div class="detail-notes-label">ANALYST NOTES</div>
     <textarea class="detail-notes" id="dNotes" placeholder="Add notes for this alert..." oninput="saveNote()"></textarea>
+    <div class="detail-pcap">
+      <div class="pcap-header" onclick="togglePCAP()">
+        <span>PACKET EVIDENCE</span>
+        <span id="pcapToggle">▶ expand</span>
+      </div>
+      <div class="pcap-body" id="pcapBody" style="display:none">
+        <table class="pcap-table" id="pcapTable"></table>
+        <div class="hex-dump" id="hexDump"></div>
+        <button class="pcap-copy" onclick="copyPCAP()">COPY EVIDENCE</button>
+      </div>
+    </div>
+    <div id="triageDetailSection"></div>
     <div class="detail-footer">
       <button class="btn-ack" id="dAck">Acknowledge</button>
       <button class="btn-dismiss" id="dDismiss">Dismiss</button>
+      <button class="btn-actor" id="dActorBtn" onclick="openActor(currentAlert && currentAlert.region)">ACTOR ›</button>
     </div>
   </div>
 </div>
@@ -625,6 +734,13 @@ canvas.donut{display:block;}
       <canvas id="radarCanvas"></canvas>
       <div class="radar-label-row" id="radarLabels"></div>
     </div>
+    <div class="card grow" id="soarCard">
+      <div class="card-header">
+        <span class="card-title">SOAR AUTOMATION</span>
+        <span id="soarCount" style="font-size:var(--fs-xs);font-family:var(--mono);color:var(--accent)">0 today</span>
+      </div>
+      <div class="soar-feed" id="soarFeed"></div>
+    </div>
   </div>
 
   <!-- MIDDLE COLUMN -->
@@ -650,6 +766,21 @@ canvas.donut{display:block;}
         <button class="filter-btn high" data-filter="high">High</button>
         <button class="filter-btn" data-filter="med">Medium</button>
       </div>
+      <div class="hunt-bar" id="huntBar">
+        <select id="huntField" class="hunt-select">
+          <option value="ip">IP</option><option value="hostname">Hostname</option>
+          <option value="rule">Rule ID</option><option value="mitre">MITRE</option><option value="name">Alert Name</option>
+        </select>
+        <input id="huntInput" class="hunt-input" placeholder="hunt query…" onkeydown="if(event.key==='Enter')runHunt()"/>
+        <button class="hunt-btn" onclick="runHunt()">HUNT ›</button>
+        <div id="huntResults" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="hunt-presets">
+        <span class="preset-label">SAVED:</span>
+        <button onclick="quickHunt('mitre','Lateral Movement')">Lateral Mvmt</button>
+        <button onclick="quickHunt('ip','10.0.')">Internal Pivot</button>
+        <button onclick="quickHunt('mitre','Exfiltration')">Exfiltration</button>
+      </div>
       <div class="bulk-bar" id="bulkBar">
         <span class="bulk-count" id="bulkCount">0 selected</span>
         <button class="bulk-btn" onclick="bulkAck()">✓ ACK All</button>
@@ -658,6 +789,13 @@ canvas.donut{display:block;}
         <button class="bulk-btn" onclick="clearBulkSelection()" style="margin-left:auto">Cancel</button>
       </div>
       <div class="alert-list" id="alertList"></div>
+    </div>
+    <div class="card" id="lmCard" style="flex-shrink:0;height:190px;display:flex;flex-direction:column;">
+      <div class="card-header">
+        <span class="card-title">LATERAL MOVEMENT</span>
+        <span id="lmNodeCount" style="font-size:var(--fs-xs);color:var(--muted)">0 nodes · click node to filter</span>
+      </div>
+      <canvas id="lmCanvas" class="lm-card-canvas"></canvas>
     </div>
     <div class="card" id="logCard" style="flex-shrink:0;max-height:240px;min-height:140px;">
       <div class="card-header" style="flex-shrink:0;">
@@ -713,6 +851,14 @@ canvas.donut{display:block;}
           <button onclick="openHeatmap()" style="background:none;border:1px solid var(--border);color:var(--muted);font:var(--fs-xs) var(--mono);border-radius:2px;padding:1px 5px;cursor:pointer;" title="Open full MITRE ATT&CK matrix">Full Matrix &#8250;</button>
         </div>
         <div id="mitreBars"></div>
+        <div class="coverage-grid" id="coverageGrid"></div>
+        <div class="coverage-legend">
+          <span class="cov-leg cov-gap">■ GAP</span>
+          <span class="cov-leg cov-covered">■ COVERED</span>
+          <span class="cov-leg cov-active">■ ACTIVE</span>
+          <span class="cov-leg cov-hot">■ HOT</span>
+          <span id="coveragePct" style="margin-left:auto;font-family:var(--mono);font-size:var(--fs-xs);color:var(--accent)">—%</span>
+        </div>
       </div>
     </div>
     <div class="card" style="flex-shrink:0;">
@@ -953,6 +1099,7 @@ let hoveredSlice  = null;
 let mitreFilter   = null;
 let incidentFilter = null;
 let sparkHoverX   = -1;
+let lmFilter      = null;
 
 function pointInRegion(px, py, r, W, H) {
   const cx = r.cx * W, cy = r.cy * H, rx = r.rx * W, ry = r.ry * H;
@@ -1002,7 +1149,7 @@ function setFilterFromCard(sev) {
   $('alertList').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function clearAllFilters() {
-  activeFilter = 'all'; searchQuery = ''; regionFilter = -1; mitreFilter = null; incidentFilter = null;
+  activeFilter = 'all'; searchQuery = ''; regionFilter = -1; mitreFilter = null; incidentFilter = null; lmFilter = null;
   $('searchInput').value = '';
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === 'all'));
   selectedIdx = -1; renderAlerts(); updateMitreBars();
@@ -1041,6 +1188,7 @@ function updateSOCMetrics() {
   const mttd = document.getElementById('mttdVal'); if (mttd) mttd.textContent = calcMTTD();
   const mttr = document.getElementById('mttrVal'); if (mttr) mttr.textContent = calcMTTR();
   updateFPRate();
+  updateExecBar();
 }
 function correlateIncident(alert) {
   const now = Date.now();
@@ -1158,6 +1306,7 @@ function getVisible() {
     if (regionFilter >= 0 && a.region !== regionFilter) return false;
     if (mitreFilter && !a.mitre.includes(mitreFilter)) return false;
     if (incidentFilter) { const inc = INCIDENTS.find(i => i.id === incidentFilter); if (!inc || !inc.alertIds.includes(a.id)) return false; }
+    if (lmFilter && a.src.split(':')[0] !== lmFilter && a.dst !== lmFilter) return false;
     return true;
   });
 }
@@ -1234,6 +1383,7 @@ function renderAlerts() {
         '</div>' +
       '</div>' +
       '<div class="alert-time">' + relTime(alertState[a.id].arrivedAt) + '</div>' +
+      triageHTML(a) +
       '<div class="alert-actions">' +
         '<button class="ack-btn' + (acked ? ' acknowledged' : '') + '" data-id="' + a.id + '">' + (acked ? '\u2713' : 'ACK') + '</button>' +
         '<button class="dismiss-btn" data-id="' + a.id + '">\u00d7</button>' +
@@ -1261,6 +1411,8 @@ function renderAlerts() {
   });
   updateSLATimers();
   drawDonut();
+  renderCoverageGrid();
+  startLM();
 }
 
 function getThreatcon(n) {
@@ -1301,9 +1453,11 @@ function updateCritCount() {
 
 /* ── DETAIL ── */
 const SEV_COLORS = { crit: 'var(--danger)', high: 'var(--warn)', med: 'var(--info)' };
+let currentAlert = null;
 function openDetail(id) {
   const a = ALERTS.find(x => x.id === id); if (!a) return;
   openAlertId = id;
+  currentAlert = a;
   $('dSev').textContent = a.sev.toUpperCase();
   $('dSev').style.color = SEV_COLORS[a.sev];
   $('dTitle').textContent = a.name;
@@ -1357,6 +1511,26 @@ function openDetail(id) {
   }
   // load analyst notes
   if ($('dNotes')) $('dNotes').value = alertState[id].notes || '';
+  // ACTOR button visibility
+  if ($('dActorBtn')) $('dActorBtn').style.display = (a.region !== undefined) ? '' : 'none';
+  // triage breakdown
+  const pct = calcTriage(a);
+  const triageCls = pct<45?'triage-fp':pct<70?'triage-amb':'triage-tp';
+  const h = new Date().getHours();
+  const timeBonus = (h>=22||h<=6) ? '+10 (night hours)' : '+0';
+  const srcCount = ALERTS.filter(x=>x.src===a.src&&x.id!==a.id).length;
+  const srcBonus = srcCount>=2 ? '+12 (repeat src ×'+srcCount+')' : '+0';
+  const sevBonus = a.sev==='crit' ? '+8 (critical sev)' : '+0';
+  const triageSection = $('triageDetailSection');
+  if (triageSection) triageSection.innerHTML = '<div class="triage-detail"><div class="triage-detail-title">AI TRIAGE BREAKDOWN</div>' +
+    '<div class="triage-row"><span>Rule base confidence</span><span>' + (RULE_BASE[a.rule]||60) + '%</span></div>' +
+    '<div class="triage-row"><span>Time of day</span><span>' + timeBonus + '%</span></div>' +
+    '<div class="triage-row"><span>Repeat source</span><span>' + srcBonus + '%</span></div>' +
+    '<div class="triage-row"><span>Severity modifier</span><span>' + sevBonus + '%</span></div>' +
+    '<div class="triage-row" style="border-top:1px solid rgba(56,182,255,0.07);padding-top:4px;margin-top:2px;"><span>TRIAGE SCORE</span><span class="triage-pct" style="font-size:var(--fs-sm)">' + pct + '% &mdash; <span class="triage-fill" style="display:inline;background:none;color:' + (triageCls==='triage-fp'?'var(--accent)':triageCls==='triage-amb'?'var(--warn)':'var(--danger)') + '">' + (pct<45?'LIKELY FP':pct<70?'AMBIGUOUS':'LIKELY TP') + '</span></span></div>' +
+    '</div>';
+  // packet evidence
+  renderPCAP(a);
   $('detailOverlay').classList.add('open');
 }
 function closeDetail() { $('detailOverlay').classList.remove('open'); openAlertId = null; }
@@ -1452,6 +1626,7 @@ function simulateNewAlert() {
   setTimeout(() => { if (alertState[id]) { alertState[id].isNew = false; renderAlerts(); } }, 4000);
   renderAlerts(); updateCritCount();
   if (tmpl.sev === 'crit' || tmpl.sev === 'high') showToast(alert);
+  triggerSOAR(alert);
   addMapAttack(tmpl.region, tmpl.sev, id);
   { const n = new Date(), t = p2(n.getUTCHours()) + ':' + p2(n.getUTCMinutes()) + ':' + p2(n.getUTCSeconds()); pushLog('ALERT', '<span class="log-t">' + t + '</span><span class="l-err">[ALERT]</span> ' + alert.rule + ' \u2014 ' + alert.name.split('\u2014')[0].trim()); }
   const el = $('statThreats');
@@ -1531,12 +1706,15 @@ function pushLog(type, html) {
   const card = $('logCard');
   card.style.animation = 'none'; card.offsetHeight; card.style.animation = 'flashBorder 0.6s ease';
 }
+const logBuffer = [];
 function addLog() {
   const [type, msg] = LOG_ENTRIES[logIdx++ % LOG_ENTRIES.length];
   const n = new Date(), t = p2(n.getUTCHours()) + ':' + p2(n.getUTCMinutes()) + ':' + p2(n.getUTCSeconds());
   const cls = type === 'ALERT' ? 'l-err' : type === 'WARN' ? 'l-warn' : 'l-ok';
   const tag = type === 'OK' ? '[OK]   ' : '[' + type + ']';
   pushLog(type, '<span class="log-t">' + t + '</span><span class="' + cls + '">' + tag + '</span> ' + msg);
+  logBuffer.push({ msg, sev: type, t: Date.now() });
+  if (logBuffer.length > 200) logBuffer.shift();
 }
 setInterval(addLog, 3500);
 document.querySelectorAll('.log-filter-btn').forEach(btn => {
@@ -1733,6 +1911,7 @@ function updateMitreBars() {
       '<span class="mb-count">' + n + '</span>' +
     '</div>'
   ).join('') : '<div class="mb-empty">No active alerts</div>';
+  renderCoverageGrid();
 }
 
 /* ── CVE SPOTLIGHT ── */
@@ -2531,6 +2710,358 @@ function saveNote() {
   renderAlerts(); // refresh row to show/hide note icon
 }
 
+/* ══════════════════════════════════════════════════════════
+   FEATURE 5: ALERT TRIAGE CONFIDENCE SCORE
+   ══════════════════════════════════════════════════════════ */
+const RULE_BASE = {'IDS-8441':82,'IDS-7201':65,'IDS-5530':71,'IDS-3301':55,'IDS-9910':88,'IDS-9001':76,'IDS-3210':68,'IDS-5502':58,'PKI-0012':42};
+function calcTriage(alert) {
+  let s = (RULE_BASE[alert.rule] || 60) / 100;
+  const h = new Date().getHours();
+  if (h >= 22 || h <= 6) s = Math.min(1, s + 0.10);
+  const sameSrc = ALERTS.filter(a => a.src === alert.src && a.id !== alert.id).length;
+  if (sameSrc >= 2) s = Math.min(1, s + 0.12);
+  if (alert.sev === 'crit') s = Math.min(1, s + 0.08);
+  return Math.round(s * 100);
+}
+function triageHTML(alert) {
+  const pct = calcTriage(alert);
+  const cls = pct < 45 ? 'triage-fp' : pct < 70 ? 'triage-amb' : 'triage-tp';
+  return '<div class="triage-score"><div class="triage-bar"><div class="triage-fill ' + cls + '" style="width:' + pct + '%"></div></div><span class="triage-pct">AI:' + pct + '%</span></div>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 3: SOAR AUTOMATION FEED
+   ══════════════════════════════════════════════════════════ */
+const SOAR_TEMPLATES = {
+  crit: [
+    { icon:'🔒', fn: a => 'IP ' + a.src + ' \u2192 FIREWALL BLOCK', status:'DONE' },
+    { icon:'🛡', fn: a => 'Host ' + a.dst + ' \u2192 EDR QUARANTINE', status:'PENDING' },
+  ],
+  high: [
+    { icon:'🔗', fn: a => 'DNS ' + a.src.split(':')[0] + ' \u2192 SINKHOLE', status:'DONE' },
+    { icon:'📋', fn: a => 'Rule ' + a.rule + ' \u2192 WATCHLIST ADD', status:'DONE' },
+  ],
+  med: [
+    { icon:'🔍', fn: a => 'Alert #' + a.id + ' \u2192 TI ENRICHMENT', status:'PENDING' },
+  ]
+};
+let soarTotal = 0;
+const soarItems = [];
+function triggerSOAR(alert) {
+  const pool = SOAR_TEMPLATES[alert.sev] || SOAR_TEMPLATES.med;
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  const status = Math.random() < 0.08 ? 'FAILED' : chosen.status;
+  soarItems.unshift({ icon: chosen.icon, text: chosen.fn(alert), status, t: Date.now() });
+  if (soarItems.length > 15) soarItems.pop();
+  soarTotal++;
+  renderSOAR();
+}
+function renderSOAR() {
+  const feed = $('soarFeed'); if (!feed) return;
+  feed.innerHTML = soarItems.map(s => {
+    const age = Math.floor((Date.now() - s.t) / 1000);
+    const ageStr = age < 60 ? age + 's' : Math.floor(age / 60) + 'm';
+    const bc = s.status === 'DONE' ? 'soar-done' : s.status === 'FAILED' ? 'soar-fail' : 'soar-pend';
+    return '<div class="soar-row"><span class="soar-icon">' + s.icon + '</span><span class="soar-text">' + s.text + '</span><span class="soar-time">' + ageStr + '</span><span class="soar-badge ' + bc + '">' + s.status + '</span></div>';
+  }).join('');
+  const cnt = $('soarCount'); if (cnt) cnt.textContent = soarTotal + ' today';
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 7: EXECUTIVE RISK KPI BAR
+   ══════════════════════════════════════════════════════════ */
+const TACTIC_COVERAGE = [
+  [1,1,0,0],[1,0,0,0],[1,1,1,0],[1,1,0,0],[1,0,0,0],
+  [0,0,0,0],[1,1,1,1],[1,1,0,0],[1,0,0,0],[1,1,0,0],
+  [0,0,0,0],[1,1,0,0],[1,0,0,0],[0,0,0,0]
+];
+function updateExecBar() {
+  const bar = $('execBar'); if (!bar || !bar.classList.contains('open')) return;
+  const vis = getVisible();
+  const riskScore = Math.min(100, Math.round(
+    vis.reduce((s, a) => s + (a.sev === 'crit' ? 80 : a.sev === 'high' ? 50 : 20), 0) / (vis.length || 1) + vis.length * 1.5
+  ));
+  const covFlat = TACTIC_COVERAGE.flat();
+  const covPct = Math.round(covFlat.filter(Boolean).length / covFlat.length * 100);
+  const acked = Object.values(alertState).filter(s => s.ackedAt);
+  const mttd = acked.length ? Math.round(acked.reduce((s, a) => s + (a.ackedAt - a.arrivedAt), 0) / acked.length / 60000) : 0;
+  const totalSteps = Object.keys(incidentState).length * 6;
+  const doneSteps = Object.values(incidentState).reduce((s, i) => s + i.playbookDone.size, 0);
+  const pbPct = totalSteps ? Math.round(doneSteps / totalSteps * 100) : 0;
+  function setG(id, pct, highIsBad) {
+    const col = highIsBad ? (pct > 65 ? 'var(--danger)' : pct > 40 ? 'var(--warn)' : 'var(--accent)') : (pct > 60 ? 'var(--accent)' : pct > 30 ? 'var(--warn)' : 'var(--danger)');
+    const el = $(id); if (el) el.style.background = 'conic-gradient(' + col + ' ' + (pct * 3.6) + 'deg, rgba(255,255,255,0.07) 0deg)';
+  }
+  setG('eg0', riskScore, true);  const ev0 = $('ev0'); if (ev0) ev0.textContent = riskScore;
+  setG('eg1', covPct, false);    const ev1 = $('ev1'); if (ev1) ev1.textContent = covPct + '%';
+  setG('eg2', Math.min(100, mttd * 3), true); const ev2 = $('ev2'); if (ev2) ev2.textContent = mttd ? mttd + 'm' : '—';
+  setG('eg3', pbPct, false);     const ev3 = $('ev3'); if (ev3) ev3.textContent = pbPct + '%';
+}
+function toggleExecBar() {
+  const bar = $('execBar'); if (!bar) return;
+  bar.classList.toggle('open');
+  updateExecBar();
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 4: DETECTION COVERAGE MATRIX
+   ══════════════════════════════════════════════════════════ */
+function renderCoverageGrid() {
+  const grid = $('coverageGrid'); if (!grid) return;
+  const activeTactics = new Set(), hotTactics = new Set();
+  getVisible().forEach(a => { a.mitre.forEach(t => { activeTactics.add(t); if (a.sev === 'crit') hotTactics.add(t); }); });
+  let covered = 0, total = 0, html = '';
+  MITRE_TACTICS.forEach((tactic, ti) => {
+    (TACTIC_COVERAGE[ti] || [0,0,0,0]).forEach(hasCov => {
+      total++;
+      let cls = 'gap';
+      if (hasCov && hotTactics.has(tactic)) cls = 'hot';
+      else if (hasCov && activeTactics.has(tactic)) cls = 'active';
+      else if (hasCov) { cls = 'covered'; covered++; }
+      html += '<div class="cov-cell ' + cls + '" title="' + tactic + ' [' + cls.toUpperCase() + ']" onclick="setMitreFilter(\'' + tactic.replace(/'/g, '\\\'') + '\')"></div>';
+    });
+  });
+  grid.innerHTML = html;
+  const pct = $('coveragePct'); if (pct) pct.textContent = Math.round(covered / total * 100) + '%';
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 2: THREAT HUNT WORKBENCH
+   ══════════════════════════════════════════════════════════ */
+function runHunt() {
+  const field = ($('huntField') || {}).value || 'ip';
+  const q = ($('huntInput') || {}).value || '';
+  const query = q.trim().toLowerCase();
+  const res = $('huntResults'); if (!res) return;
+  if (!query) { res.innerHTML = ''; return; }
+  let am = 0, im = 0, lm = 0;
+  ALERTS.forEach(a => {
+    const hay = field === 'ip' ? (a.src + ' ' + a.dst) : field === 'rule' ? a.rule : field === 'mitre' ? a.mitre.join(' ') : field === 'hostname' ? (a.src + ' ' + a.dst) : a.name;
+    if (hay.toLowerCase().includes(query)) am++;
+  });
+  IOC_LIST.forEach(i => { if ((i.value + ' ' + i.feed).toLowerCase().includes(query)) im++; });
+  logBuffer.forEach(l => { if (l.msg.toLowerCase().includes(query)) lm++; });
+  res.innerHTML =
+    (am ? '<span class="hunt-chip hc-alerts" onclick="setSearchQuery(\'' + query.replace(/'/g, '\\\'') + '\')" title="Filter alerts">' + am + ' Alert' + (am > 1 ? 's' : '') + ' \u25b8</span>' : '') +
+    (im ? '<span class="hunt-chip hc-iocs" title="IOC matches">' + im + ' IOC' + (im > 1 ? 's' : '') + '</span>' : '') +
+    (lm ? '<span class="hunt-chip hc-logs" title="Log matches">' + lm + ' Log' + (lm > 1 ? 's' : '') + '</span>' : '') +
+    (!am && !im && !lm ? '<span style="color:var(--muted);font-size:var(--fs-xs);font-family:var(--mono)">no matches</span>' : '');
+}
+function quickHunt(field, q) {
+  const hf = $('huntField'); if (hf) hf.value = field;
+  const hi = $('huntInput'); if (hi) hi.value = q;
+  runHunt();
+}
+function setSearchQuery(q) {
+  const si = $('searchInput'); if (si) { si.value = q; searchQuery = q.toLowerCase(); selectedIdx = -1; renderAlerts(); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 8: PACKET EVIDENCE PREVIEW
+   ══════════════════════════════════════════════════════════ */
+function genPackets(alert) {
+  const rng = n => Math.abs(((alert.id * 31337 * (n + 1) * 1664525) + 1013904223) & 0x7fffffff) % 100;
+  const proto = ['TCP','TCP','TCP','UDP','ICMP'][rng(0) % 5];
+  const now = Date.now();
+  return Array.from({ length: 5 }, (_, i) => ({
+    n: i + 1,
+    time: new Date(now - rng(i + 1) * 800 + i * rng(i + 2) * 200).toISOString().slice(11, 23),
+    src: alert.src.split(':')[0] + ':' + (1024 + rng(i + 5) % 64000),
+    dst: alert.dst.split('/')[0] + ':' + [80, 443, 8080, 22, 3389][rng(i + 3) % 5],
+    proto,
+    flags: proto === 'TCP' ? ['SYN','SYN-ACK','ACK','PSH-ACK','RST'][i % 5] : '\u2014',
+    len: 40 + rng(i + 7) * 8,
+    info: ['Client Hello','Server Hello','Application Data','Encrypted Alert','FIN'][i % 5]
+  }));
+}
+function genHex(alert) {
+  const bytes = Array.from({ length: 48 }, (_, i) => ((alert.id * i * 257 + i * 31) & 0xff).toString(16).padStart(2, '0'));
+  return [0, 1, 2].map(i => {
+    const c = bytes.slice(i * 16, i * 16 + 16);
+    const ascii = c.map(b => { const n = parseInt(b, 16); return n >= 32 && n < 127 ? String.fromCharCode(n) : '.'; }).join('');
+    return (i * 16).toString(16).padStart(4, '0') + '  ' + c.join(' ') + '  |' + ascii + '|';
+  }).join('\n');
+}
+function renderPCAP(alert) {
+  const tbl = $('pcapTable'), hex = $('hexDump'); if (!tbl || !hex) return;
+  const pkts = genPackets(alert);
+  tbl.innerHTML = '<tr><th>#</th><th>Time</th><th>Source</th><th>Destination</th><th>Proto</th><th>Flags</th><th>Len</th><th>Info</th></tr>' +
+    pkts.map(p => '<tr><td>' + p.n + '</td><td>' + p.time + '</td><td>' + p.src + '</td><td>' + p.dst + '</td><td class="proto-' + p.proto.toLowerCase() + '">' + p.proto + '</td><td>' + p.flags + '</td><td>' + p.len + '</td><td>' + p.info + '</td></tr>').join('');
+  hex.textContent = genHex(alert);
+  const body = $('pcapBody'); if (body) body.style.display = 'none';
+  const tog = $('pcapToggle'); if (tog) tog.textContent = '\u25b6 expand';
+}
+function togglePCAP() {
+  const b = $('pcapBody'); if (!b) return;
+  const open = b.style.display === 'none';
+  b.style.display = open ? 'block' : 'none';
+  const t = $('pcapToggle'); if (t) t.textContent = open ? '\u25bc collapse' : '\u25b6 expand';
+}
+function copyPCAP() {
+  const t = ($('pcapTable') || {}).innerText + '\n' + (($('hexDump') || {}).textContent || '');
+  navigator.clipboard.writeText(t).then(() => showToast({ name: 'PCAP evidence copied to clipboard', sev: 'med' }));
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 6: THREAT ACTOR DOSSIER
+   ══════════════════════════════════════════════════════════ */
+const ACTOR_DOSSIERS = [
+  { flag:'🇷🇺', name:'APT28 / Fancy Bear', aliases:'Sofacy · STRONTIUM · Pawn Storm',
+    activeSince:'2004', confidence:91, sectors:['Government','Defense','Energy'],
+    ttps:['T1566 Phishing','T1190 Exploit Public App','T1078 Valid Accounts','T1059 Command Scripting'],
+    tools:['X-Agent','Zebrocy','LoJax','Sofacy'],
+    campaigns:['Operation Grizzly Steppe (2016)','VPNFilter (2018)','UAC-0028 (2023)'] },
+  { flag:'🇰🇵', name:'Lazarus Group', aliases:'Hidden Cobra · APT38 · Zinc',
+    activeSince:'2009', confidence:87, sectors:['Finance','Crypto','Defense'],
+    ttps:['T1059 PowerShell','T1566 Spear Phishing','T1486 Data Encryption','T1190 Exploit'],
+    tools:['AppleJeus','BLINDINGCAN','HOPLIGHT'],
+    campaigns:['WannaCry (2017)','Bangladesh Bank Heist (2016)','3CX Supply Chain (2023)'] },
+  { flag:'🇨🇳', name:'APT41 / Double Dragon', aliases:'Winnti · Barium · Wicked Panda',
+    activeSince:'2012', confidence:85, sectors:['Healthcare','Telecom','Gaming'],
+    ttps:['T1195 Supply Chain','T1036 Masquerading','T1071 Web Protocols','T1560 Archive Data'],
+    tools:['POISONPLUG','CROSSWALK','ShadowPad'],
+    campaigns:['SolarWinds Adjacent (2020)','Citrix ADC Exploit (2019)','COVID-19 Research Theft (2020)'] },
+  { flag:'🇮🇷', name:'APT33 / Elfin', aliases:'Refined Kitten · Magnallium',
+    activeSince:'2013', confidence:80, sectors:['Energy','Aviation','Military'],
+    ttps:['T1566 Phishing','T1204 User Execution','T1048 Exfiltration','T1070 Indicator Removal'],
+    tools:['SHAPESHIFT','TURNEDUP','NotPetya-variant'],
+    campaigns:['Shamoon 2.0 (2016)','Saudi Aramco Targeting (2017)','Triton ICS (2017)'] },
+  { flag:'🇧🇾', name:'UNC1151 / Ghostwriter', aliases:'Minsk Threat Group',
+    activeSince:'2017', confidence:72, sectors:['Government','Media','NGO'],
+    ttps:['T1566 Phishing','T1195 Compromise Infrastructure','T1059 Scripting','T1036 Masquerade'],
+    tools:['Cobalt Strike','Meterpreter','Custom PowerShell'],
+    campaigns:['Ghostwriter Influence Ops (2020)','NATO Narrative Ops (2021)','Belarusian Disinformation (2022)'] },
+  { flag:'🇨🇳', name:'APT10 / Stone Panda', aliases:'MenuPass · Red Apollo · Potassium',
+    activeSince:'2009', confidence:88, sectors:['MSP','Manufacturing','Healthcare'],
+    ttps:['T1199 Trusted Relationship','T1078 Valid Accounts','T1105 Remote File Copy','T1003 Credential Dump'],
+    tools:['PlugX','QuasarRAT','RedLeaves','ANEL'],
+    campaigns:['Cloud Hopper (2016)','Operation Soft Cell (2019)','MSP Campaign (2023)'] },
+  { flag:'🇺🇦', name:'Sandworm / Voodoo Bear', aliases:'Iridium · TeleBots · BlackEnergy',
+    activeSince:'2009', confidence:94, sectors:['Energy','Government','Critical Infrastructure'],
+    ttps:['T1485 Data Destruction','T1490 Inhibit Recovery','T1016 System Network Discovery'],
+    tools:['NotPetya','Industroyer','Cyclops Blink','BlackEnergy3'],
+    campaigns:['Ukraine Power Grid (2015/2016)','NotPetya (2017)','Viasat Hack (2022)'] },
+  { flag:'🇧🇷', name:'LAPSUS$ Group', aliases:'DEV-0537 · Strawberry Tempest',
+    activeSince:'2021', confidence:66, sectors:['Tech','Telecom','Crypto'],
+    ttps:['T1078 Valid Accounts','T1539 Cookie Theft','T1621 MFA Bypass','T1530 Data from Cloud'],
+    tools:['Redline Stealer','NightHawk C2','Custom exfil tools'],
+    campaigns:['Microsoft Source Code (2022)','Okta Breach (2022)','NVIDIA Extortion (2022)'] },
+  { flag:'🌐', name:'TA505 / FIN11', aliases:'Cl0p Ransomware Group · Evil Corp Adjacent',
+    activeSince:'2014', confidence:77, sectors:['Financial','Healthcare','Retail'],
+    ttps:['T1566 Mass Phishing','T1190 Exploit (MOVEit)','T1486 Ransomware','T1041 Exfil C2'],
+    tools:['Cl0p','Dridex','FlawedAmmyy','ServHelper'],
+    campaigns:['MOVEit Mass Exploitation (2023)','Accellion FTA (2020)','Dridex Banking Campaigns'] },
+];
+function openActor(regionIdx) {
+  if (regionIdx === undefined || regionIdx === null) return;
+  const d = ACTOR_DOSSIERS[regionIdx % ACTOR_DOSSIERS.length]; if (!d) return;
+  $('actorFlag').textContent = d.flag;
+  $('actorName').textContent = d.name;
+  $('actorAlias').textContent = d.aliases;
+  $('actorBody').innerHTML =
+    '<div class="actor-sec-title">Active Since</div>' +
+    '<div style="font-family:var(--mono);color:var(--text)">' + d.activeSince + '&nbsp;&nbsp;<span style="color:' + (d.confidence > 75 ? 'var(--danger)' : d.confidence > 50 ? 'var(--warn)' : 'var(--accent)') + '">' + d.confidence + '% confidence</span></div>' +
+    '<div class="actor-sec-title">Primary TTPs</div><div>' + d.ttps.map(t => '<span class="actor-ttp">' + t + '</span>').join('') + '</div>' +
+    '<div class="actor-sec-title">Known Tooling</div><div>' + d.tools.map(t => '<span class="actor-tool">' + t + '</span>').join('') + '</div>' +
+    '<div class="actor-sec-title">Target Sectors</div><div style="font-size:var(--fs-xs);color:var(--muted);margin-top:3px">' + d.sectors.join(' \u00b7 ') + '</div>' +
+    '<div class="actor-sec-title">Recent Campaigns</div>' + d.campaigns.map(c => '<div class="actor-campaign">' + c + '</div>').join('');
+  $('actorOverlay').classList.add('open');
+}
+function closeActor() { $('actorOverlay').classList.remove('open'); }
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 1: LATERAL MOVEMENT GRAPH
+   ══════════════════════════════════════════════════════════ */
+let lmNodes = [], lmEdges = [], lmRaf = null;
+const LM_SEV_COL = { crit:'#f04545', high:'#f5a623', med:'#38b6ff', accent:'#00e5a0' };
+
+function buildLMGraph() {
+  const cv = $('lmCanvas'); if (!cv) return;
+  const W = cv.offsetWidth || 400, H = cv.offsetHeight || 130;
+  const nodeMap = new Map();
+  lmEdges = [];
+  getVisible().forEach(a => {
+    const src = a.src.split(':')[0], dst = a.dst.split('/')[0];
+    if (!nodeMap.has(src)) nodeMap.set(src, { id:src, label:src.split('.').slice(-2).join('.'), sev:a.sev, x:50+Math.random()*(W-100), y:25+Math.random()*(H-50), vx:0, vy:0, hits:0 });
+    if (!nodeMap.has(dst)) nodeMap.set(dst, { id:dst, label:dst.split('.').slice(-2).join('.'), sev:'med', x:50+Math.random()*(W-100), y:25+Math.random()*(H-50), vx:0, vy:0, hits:0 });
+    const sn = nodeMap.get(src);
+    sn.hits++;
+    if (a.sev === 'crit') sn.sev = 'crit';
+    else if (a.sev === 'high' && sn.sev !== 'crit') sn.sev = 'high';
+    lmEdges.push({ src, dst, tactic: a.mitre[0] || '', sev: a.sev });
+  });
+  if (!nodeMap.has('HQ')) nodeMap.set('HQ', { id:'HQ', label:'HQ', sev:'accent', x:W/2, y:H/2, vx:0, vy:0, hits:99 });
+  lmNodes = [...nodeMap.values()];
+  const nc = $('lmNodeCount'); if (nc) nc.textContent = (lmNodes.length - 1) + ' nodes' + (lmFilter ? ' \u00b7 filtered: ' + lmFilter : '') + ' \u00b7 click node to filter';
+}
+
+function tickLM() {
+  const cv = $('lmCanvas'); if (!cv) { lmRaf = null; return; }
+  const W = cv.offsetWidth, H = cv.offsetHeight;
+  if (W === 0 || H === 0) { lmRaf = requestAnimationFrame(tickLM); return; }
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  lmNodes.forEach(n => {
+    n.vx += (W / 2 - n.x) * 0.0008;
+    n.vy += (H / 2 - n.y) * 0.0008;
+    lmNodes.forEach(m => {
+      if (m === n) return;
+      const dx = n.x - m.x, dy = n.y - m.y, d = Math.sqrt(dx*dx + dy*dy) || 1;
+      const f = 500 / (d * d);
+      n.vx += dx/d*f; n.vy += dy/d*f;
+    });
+    n.vx *= 0.82; n.vy *= 0.82;
+    n.x = Math.max(20, Math.min(W-20, n.x + n.vx));
+    n.y = Math.max(14, Math.min(H-14, n.y + n.vy));
+  });
+  lmEdges.forEach(e => {
+    const s = lmNodes.find(n => n.id === e.src), t = lmNodes.find(n => n.id === e.dst);
+    if (!s || !t) return;
+    const dx = t.x - s.x, dy = t.y - s.y, d = Math.sqrt(dx*dx + dy*dy) || 1;
+    const f = (d - 80) * 0.035;
+    s.vx += dx/d*f; s.vy += dy/d*f;
+    t.vx -= dx/d*f; t.vy -= dy/d*f;
+  });
+  ctx.clearRect(0, 0, W, H);
+  lmEdges.forEach(e => {
+    const s = lmNodes.find(n => n.id === e.src), t = lmNodes.find(n => n.id === e.dst);
+    if (!s || !t) return;
+    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(t.x, t.y);
+    ctx.strokeStyle = (LM_SEV_COL[e.sev] || '#38b6ff') + '55'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#4d7a9a'; ctx.font = '8px monospace';
+    const mx = (s.x + t.x) / 2, my = (s.y + t.y) / 2;
+    ctx.fillText(e.tactic.slice(0, 10), mx, my - 2);
+  });
+  lmNodes.forEach(n => {
+    const r = n.id === 'HQ' ? 8 : 4 + Math.min(n.hits, 4);
+    const col = LM_SEV_COL[n.sev] || '#38b6ff';
+    ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = col + '28'; ctx.fill();
+    ctx.strokeStyle = col; ctx.lineWidth = lmFilter === n.id ? 2.5 : 1; ctx.stroke();
+    ctx.fillStyle = lmFilter === n.id ? '#fff' : '#cfe3f0'; ctx.font = '8px monospace';
+    ctx.fillText(n.label, n.x + r + 2, n.y + 3);
+  });
+  lmRaf = requestAnimationFrame(tickLM);
+}
+
+function startLM() {
+  if (lmRaf) { cancelAnimationFrame(lmRaf); lmRaf = null; }
+  buildLMGraph();
+  if (lmNodes.length > 0) tickLM();
+}
+
+function initLM() {
+  const cv = $('lmCanvas'); if (!cv) return;
+  cv.addEventListener('click', e => {
+    const rect = cv.getBoundingClientRect();
+    const scaleX = cv.width / rect.width, scaleY = cv.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+    const hit = lmNodes.find(n => { const dx = n.x - mx, dy = n.y - my; return Math.sqrt(dx*dx + dy*dy) < 12; });
+    lmFilter = (hit && hit.id !== 'HQ') ? (lmFilter === hit.id ? null : hit.id) : null;
+    renderAlerts();
+  });
+}
+
 /* ── INIT ── */
 ALERTS.forEach(a => { correlateIncident(a); addIOC(a); tlPush(a.id, a.sev); });
 updateIncidentCount();
@@ -2544,6 +3075,7 @@ initMap();
 renderCVE(0);
 drawRadar();
 drawTimeline();
+initLM();
 
 /* ── DONUT CANVAS MOUSE HANDLERS ── */
 (function() {
@@ -2590,5 +3122,20 @@ drawTimeline();
 </script>
 
 <div id="mapTooltip" style="position:fixed;display:none;pointer-events:none;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:7px 11px;font-family:var(--mono);font-size:var(--fs-xs);z-index:500;min-width:150px;box-shadow:0 4px 20px rgba(0,0,0,0.6);line-height:1.6;"></div>
+
+<!-- ACTOR DOSSIER OVERLAY -->
+<div class="actor-overlay" id="actorOverlay" onclick="closeActor()">
+  <div class="actor-panel" onclick="event.stopPropagation()">
+    <div class="actor-hdr">
+      <span class="actor-flag" id="actorFlag"></span>
+      <div style="flex:1;min-width:0;">
+        <div class="actor-name" id="actorName"></div>
+        <div class="actor-alias" id="actorAlias"></div>
+      </div>
+      <button class="actor-close-btn" onclick="closeActor()">✕ Close</button>
+    </div>
+    <div id="actorBody"></div>
+  </div>
+</div>
 </body>
 </html>
