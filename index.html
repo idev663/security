@@ -1,0 +1,3141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureWatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #07101a;
+  --surface: #0d1b2a;
+  --surface2:#102030;
+  --border:  #1a3048;
+  --accent:  #00e5a0;
+  --danger:  #f04545;
+  --warn:    #f5a623;
+  --info:    #38b6ff;
+  --text:    #cfe3f0;
+  --muted:   #4d7a9a;
+  --mono:    'Share Tech Mono','Courier New',monospace;
+  --sans:    'Rajdhani',sans-serif;
+  --fs-xs:   clamp(9px,0.65vw,11px);
+  --fs-sm:   clamp(11px,0.8vw,13px);
+  --fs-md:   clamp(13px,1vw,15px);
+  --fs-lg:   clamp(18px,1.4vw,24px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:var(--fs-md);line-height:1.5;display:flex;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(10px,1.2vw,20px);height:clamp(42px,3.2vw,52px);background:color-mix(in srgb,var(--surface) 85%,#000);border-bottom:1px solid var(--border);box-shadow:0 2px 20px rgba(0,0,0,0.5),0 1px 0 rgba(56,182,255,0.1);animation:fadeDown 0.4s ease both;position:relative;}
+.topbar-accent{position:absolute;bottom:0;left:0;right:0;height:2px;pointer-events:none;transition:background 0.6s;background:linear-gradient(90deg,transparent 0%,var(--accent) 20%,var(--accent) 80%,transparent 100%) !important;}
+@keyframes threatPulse{0%,100%{opacity:1;}50%{opacity:0.55;}}
+.threatcon-badge{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid var(--border);transition:border-color 0.4s,color 0.4s;}
+.threatcon-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background 0.4s,box-shadow 0.4s;}
+.threatcon-sub{color:var(--muted);font-size:var(--fs-xs);letter-spacing:0.5px;text-transform:none;}
+.threatcon-badge.pulsing{animation:threatPulse 1.2s ease-in-out infinite;}
+.threat-ring{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background 0.6s;}
+.threat-ring-inner{width:22px;height:22px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:var(--fs-xs);font-weight:700;transition:color 0.4s;}
+.analyst-pill{border:1px solid var(--border);border-radius:3px;padding:2px 7px;font-family:var(--mono);}
+@keyframes cardFlash{0%{box-shadow:0 0 0 1px rgba(255,255,255,0);}40%{box-shadow:0 0 12px 2px currentColor;}100%{box-shadow:0 0 0 1px rgba(255,255,255,0);}}
+.stat-card.card-flash{animation:cardFlash 0.5s ease;}
+.logo{font-family:var(--mono);font-size:var(--fs-sm);letter-spacing:3px;color:var(--accent);text-transform:uppercase;user-select:none;text-shadow:0 0 20px rgba(0,229,160,0.35);}
+.logo span{color:var(--info);}
+.topbar-right{display:flex;align-items:center;gap:clamp(6px,1vw,14px);}
+.status-pill{display:flex;align-items:center;gap:5px;font-size:var(--fs-xs);letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dot-green{background:var(--accent);box-shadow:0 0 6px var(--accent);}
+.dot-red{background:var(--danger);box-shadow:0 0 6px var(--danger);animation:blink 1.4s ease-in-out infinite;}
+.dot-amber{background:var(--warn);box-shadow:0 0 6px var(--warn);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.clock{font-family:var(--mono);font-size:var(--fs-sm);color:var(--info);min-width:88px;text-align:right;}
+.icon-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 7px;cursor:pointer;font-size:var(--fs-xs);font-family:var(--mono);transition:all 0.15s;letter-spacing:1px;}
+.icon-btn:hover{color:var(--text);border-color:var(--muted);}
+.icon-btn.muted-active{color:var(--danger);border-color:var(--danger);}
+.search-wrap{position:relative;display:flex;align-items:center;}
+.search-wrap input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:var(--fs-xs);padding:4px 10px 4px 26px;border-radius:3px;width:clamp(130px,10vw,180px);outline:none;transition:border-color 0.2s;}
+.search-wrap input:focus{border-color:var(--info);}
+.search-wrap input::placeholder{color:var(--muted);}
+.search-icon{position:absolute;left:8px;color:var(--muted);font-size:10px;pointer-events:none;}
+
+/* PAGE - 3 COLUMNS */
+.page{flex:1;min-height:0;display:grid;grid-template-columns:clamp(180px,15vw,240px) 1fr clamp(220px,22vw,285px);gap:clamp(6px,0.7vw,10px);padding:clamp(6px,0.7vw,10px);}
+.col,.main-col,.right-col{display:flex;flex-direction:column;gap:clamp(6px,0.7vw,10px);min-height:0;}
+.main-col{overflow-y:auto;}
+.main-col::-webkit-scrollbar{width:4px;}
+.main-col::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.main-col::-webkit-scrollbar-track{background:transparent;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:clamp(8px,0.8vw,12px);display:flex;flex-direction:column;min-height:0;opacity:0;animation:fadeUp 0.45s ease forwards;transition:border-color 0.25s,box-shadow 0.25s;box-shadow:0 2px 16px rgba(0,0,0,0.45),inset 0 1px 0 rgba(56,182,255,0.04);}
+.card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.55),0 0 0 1px rgba(56,182,255,0.1),inset 0 1px 0 rgba(56,182,255,0.06);border-color:rgba(56,182,255,0.18);}
+.card.grow{flex:1;min-height:0;}
+.col .card:nth-child(1){animation-delay:0.07s;}
+.col .card:nth-child(2){animation-delay:0.14s;}
+.main-col .stats-grid{animation:none;}
+.main-col > .card:nth-child(2){animation-delay:0.10s;}
+.main-col > .card:nth-child(3){animation-delay:0.17s;}
+.right-col .card:nth-child(1){animation-delay:0.09s;}
+.right-col .card:nth-child(2){animation-delay:0.16s;}
+.right-col .card:nth-child(3){animation-delay:0.23s;}
+.stats-grid .stat-card:nth-child(1){animation-delay:0.06s;}
+.stats-grid .stat-card:nth-child(2){animation-delay:0.12s;}
+.stats-grid .stat-card:nth-child(3){animation-delay:0.18s;}
+.stats-grid .stat-card:nth-child(4){animation-delay:0.24s;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes slideIn{from{opacity:0;transform:translateX(22px);}to{opacity:1;transform:translateX(0);}}
+@keyframes flashBorder{0%,100%{border-color:var(--border);}40%{border-color:var(--accent);}}
+
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(6px,0.6vw,10px);flex-shrink:0;}
+.card-title{font-size:var(--fs-xs);letter-spacing:2px;color:var(--info);text-transform:uppercase;}
+.card-action{font-size:var(--fs-xs);color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:1px;padding:2px 5px;border:1px solid transparent;border-radius:2px;transition:color 0.15s,border-color 0.15s;}
+.card-action:hover{color:var(--info);border-color:var(--border);}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(5px,0.6vw,8px);flex-shrink:0;}
+@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:clamp(9px,0.8vw,13px) clamp(11px,0.9vw,15px);cursor:default;transition:background 0.15s,transform 0.2s,box-shadow 0.2s;opacity:0;animation:fadeUp 0.45s ease forwards;}
+.stat-card:hover{background:#152a3e;transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.4);}
+.stat-card.red{border-left-color:var(--danger);}
+.stat-card.red:hover{box-shadow:0 4px 20px rgba(240,69,69,0.15),0 2px 8px rgba(0,0,0,0.4);}
+.stat-card.amber{border-left-color:var(--warn);}
+.stat-card.amber:hover{box-shadow:0 4px 20px rgba(245,166,35,0.15),0 2px 8px rgba(0,0,0,0.4);}
+.stat-card.cyan{border-left-color:var(--info);}
+.stat-card.cyan:hover{box-shadow:0 4px 20px rgba(56,182,255,0.15),0 2px 8px rgba(0,0,0,0.4);}
+.stat-label{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+.stat-value{font-family:var(--mono);font-size:var(--fs-lg);color:var(--text);line-height:1.2;margin-bottom:3px;}
+.stat-delta{font-size:var(--fs-xs);color:var(--muted);margin-top:2px;}
+.up{color:var(--danger);}
+.down{color:var(--accent);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:5px;margin-bottom:7px;flex-shrink:0;}
+.filter-btn{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:0.5px;font-weight:600;text-transform:uppercase;padding:3px 11px;border-radius:3px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;transition:all 0.18s;}
+.filter-btn:hover{color:var(--text);border-color:var(--border);background:rgba(255,255,255,0.07);}
+.filter-btn.active{background:rgba(56,182,255,0.15);border-color:rgba(56,182,255,0.4);color:var(--info);box-shadow:0 0 8px rgba(56,182,255,0.12);}
+.filter-btn.active.crit{background:rgba(240,69,69,0.15);border-color:rgba(240,69,69,0.4);color:var(--danger);box-shadow:0 0 8px rgba(240,69,69,0.12);}
+.filter-btn.active.high{background:rgba(245,166,35,0.15);border-color:rgba(245,166,35,0.4);color:var(--warn);box-shadow:0 0 8px rgba(245,166,35,0.12);}
+
+/* ALERT LIST */
+.alert-list{display:flex;flex-direction:column;gap:4px;overflow-y:auto;min-height:0;}
+.alert-list::-webkit-scrollbar{width:3px;}
+.alert-list::-webkit-scrollbar-thumb{background:var(--border);}
+.alert-item{display:flex;align-items:flex-start;gap:clamp(5px,0.5vw,7px);padding:clamp(5px,0.5vw,8px) clamp(7px,0.7vw,10px);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:3px;cursor:pointer;transition:background 0.18s,border-color 0.18s,transform 0.15s,box-shadow 0.18s,opacity 0.3s,max-height 0.35s;max-height:80px;overflow:hidden;animation:slideIn 0.3s ease both;}
+.alert-item:hover{background:rgba(56,182,255,0.07);transform:translateX(3px);box-shadow:0 2px 10px rgba(0,0,0,0.3);}
+.alert-item.selected{background:rgba(56,182,255,0.10);border-left:2px solid var(--info);box-shadow:inset 0 0 0 1px rgba(56,182,255,0.3);}
+.alert-item.crit{border-left-color:var(--danger);background:rgba(240,69,69,0.05);}
+.alert-item.crit:hover{background:rgba(240,69,69,0.09);}
+.alert-item.high{border-left-color:var(--warn);}
+.alert-item.med{border-left-color:var(--info);}
+.alert-item.dismissing{opacity:0;max-height:0;padding-top:0;padding-bottom:0;margin:0;border-width:0;}
+@keyframes critGlow{0%,100%{box-shadow:inset 3px 0 0 var(--danger),0 0 0 rgba(240,69,69,0);}50%{box-shadow:inset 3px 0 0 var(--danger),0 0 14px rgba(240,69,69,0.28);}}
+.alert-item.crit:not(.acknowledged){animation:slideIn 0.3s ease both,critGlow 2.2s ease-in-out 0.4s infinite;}
+@keyframes newPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.new-badge{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:1.5px;padding:1px 5px;border-radius:2px;background:var(--danger);color:#fff;margin-left:6px;vertical-align:middle;animation:newPulse 0.8s ease-in-out infinite;}
+.sev-badge{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:1px;padding:2px 5px;border-radius:2px;flex-shrink:0;margin-top:1px;}
+.badge-crit{background:rgba(240,69,69,0.15);color:var(--danger);}
+.badge-high{background:rgba(245,166,35,0.15);color:var(--warn);}
+.badge-med{background:rgba(56,182,255,0.15);color:var(--info);}
+.alert-info{flex:1;min-width:0;}
+.alert-name{font-size:var(--fs-sm);font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.alert-meta{display:flex;gap:6px;align-items:center;margin-top:2px;}
+.alert-src{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.mitre-tag{font-family:var(--mono);font-size:var(--fs-xs);padding:1px 5px;border-radius:2px;background:rgba(0,229,160,0.14);color:var(--accent);border:1px solid rgba(0,229,160,0.30);white-space:nowrap;flex-shrink:0;letter-spacing:0.5px;}
+.alert-time{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);flex-shrink:0;margin-top:1px;min-width:52px;text-align:right;}
+.alert-actions{display:flex;gap:3px;flex-shrink:0;align-items:flex-start;margin-top:1px;}
+.ack-btn,.dismiss-btn{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 6px;border-radius:2px;border:1px solid var(--border);background:transparent;cursor:pointer;transition:all 0.15s;color:var(--muted);}
+.ack-btn:hover{color:var(--accent);border-color:var(--accent);}
+.dismiss-btn:hover{color:var(--danger);border-color:var(--danger);}
+.alert-item.acknowledged .ack-btn{color:var(--accent);border-color:var(--accent);background:rgba(0,229,160,0.08);}
+.acknowledged-tag{font-family:var(--mono);font-size:var(--fs-xs);color:var(--accent);}
+
+/* DETAIL OVERLAY */
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;display:none;align-items:center;justify-content:center;}
+.detail-overlay.open{display:flex;animation:fadeIn 0.2s ease;}
+.detail-panel{background:var(--surface);border:1px solid var(--info);border-radius:6px;width:clamp(320px,32vw,500px);padding:22px;max-height:90vh;overflow-y:auto;position:relative;animation:slideIn 0.25s ease;box-shadow:0 0 40px rgba(56,182,255,0.12);}
+.detail-close{position:absolute;top:11px;right:13px;background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;line-height:1;transition:color 0.15s;}
+.detail-close:hover{color:var(--danger);}
+.detail-sev{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.detail-title{font-size:clamp(14px,1.1vw,17px);font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.3;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;margin-bottom:12px;}
+.detail-field label{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px;}
+.detail-field span{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text);}
+.detail-mitre{margin-bottom:12px;border-top:1px solid rgba(56,182,255,0.07);padding-top:10px;margin-top:4px;}
+.detail-mitre label{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:5px;}
+.mitre-tags-row{display:flex;gap:5px;flex-wrap:wrap;}
+.mitre-tag-lg{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 7px;border-radius:3px;background:rgba(0,229,160,0.08);color:var(--accent);border:1px solid rgba(0,229,160,0.2);}
+.detail-rec{background:rgba(56,182,255,0.04);border:1px solid rgba(56,182,255,0.2);border-radius:3px;padding:9px 11px;font-size:var(--fs-sm);color:var(--muted);line-height:1.6;border-top:1px solid rgba(56,182,255,0.07);padding-top:10px;margin-top:4px;}
+.detail-rec strong{color:var(--text);font-weight:500;}
+.detail-killchain{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:12px;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:3px;}
+.kc-stage{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:0.5px;color:var(--muted);opacity:0.45;transition:opacity 0.2s,color 0.2s,box-shadow 0.2s;white-space:nowrap;padding:3px 7px;}
+.kc-stage.kc-active{color:var(--accent);opacity:1;font-weight:700;box-shadow:0 0 8px rgba(0,229,160,0.25);}
+.kc-arrow{color:var(--border);margin:0 3px;opacity:0.6;}
+.detail-intel{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:9px 11px;margin-top:10px;border-top:1px solid rgba(56,182,255,0.07);padding-top:10px;}
+.detail-intel-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.detail-intel-type{font-family:var(--mono);font-size:var(--fs-xs);font-weight:700;color:var(--warn);letter-spacing:1px;text-transform:uppercase;}
+.detail-intel-goal{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);}
+.detail-intel-section{margin-bottom:7px;}
+.detail-intel-section:last-child{margin-bottom:0;}
+.detail-intel-label{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
+.detail-intel-text{font-family:var(--mono);font-size:var(--fs-xs);color:var(--text);line-height:1.65;opacity:0.9;}
+.detail-footer{display:flex;gap:7px;margin-top:14px;justify-content:flex-end;}
+.btn-ack{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:3px;border:1px solid var(--accent);background:rgba(0,229,160,0.08);color:var(--accent);cursor:pointer;transition:all 0.15s;}
+.btn-ack:hover{background:rgba(0,229,160,0.18);}
+.btn-dismiss{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:3px;border:1px solid var(--danger);background:rgba(240,69,69,0.08);color:var(--danger);cursor:pointer;transition:all 0.15s;}
+.btn-dismiss:hover{background:rgba(240,69,69,0.18);}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:18px;right:18px;z-index:200;display:flex;flex-direction:column-reverse;gap:7px;pointer-events:none;}
+.toast{pointer-events:all;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:9px 12px;min-width:250px;max-width:320px;display:flex;align-items:flex-start;gap:9px;box-shadow:0 4px 20px rgba(0,0,0,0.5);animation:toastIn 0.3s ease both;}
+.toast.leaving{animation:toastOut 0.3s ease both;}
+.toast.t-crit{border-left-color:var(--danger);}
+.toast.t-high{border-left-color:var(--warn);}
+.toast.t-med{border-left-color:var(--info);}
+.toast-body{flex:1;}
+.toast-label{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.toast.t-crit .toast-label{color:var(--danger);}
+.toast.t-high .toast-label{color:var(--warn);}
+.toast.t-med  .toast-label{color:var(--info);}
+.toast-msg{font-size:var(--fs-xs);color:var(--text);line-height:1.5;}
+.toast-src{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);margin-top:2px;}
+.toast-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:0;transition:color 0.15s;}
+.toast-close:hover{color:var(--danger);}
+@keyframes toastIn{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:translateX(0);}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(18px);}}
+@keyframes toastDrain{from{width:100%;}to{width:0%;}}
+.toast-progress{height:2px;background:currentColor;opacity:0.35;border-radius:0 0 4px 4px;width:100%;animation:toastDrain 4.5s linear forwards;margin-top:7px;}
+.toast.t-crit .toast-progress{color:var(--danger);}
+.toast.t-high .toast-progress{color:var(--warn);}
+.toast.t-med  .toast-progress{color:var(--info);}
+
+/* KEYBOARD OVERLAY */
+.kbd-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:300;display:none;align-items:center;justify-content:center;}
+.kbd-overlay.open{display:flex;animation:fadeIn 0.2s ease;}
+.kbd-panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:22px 26px;animation:fadeUp 0.2s ease;}
+.kbd-panel h3{font-family:var(--mono);font-size:var(--fs-xs);color:var(--info);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.kbd-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;}
+.kbd-key{font-family:var(--mono);font-size:var(--fs-xs);background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--accent);text-align:center;white-space:nowrap;}
+.kbd-desc{font-size:var(--fs-sm);color:var(--muted);align-self:center;}
+.kbd-close-row{margin-top:14px;text-align:right;}
+
+/* SYSTEM STATUS */
+.system-list{display:flex;flex-direction:column;}
+.system-row{display:flex;align-items:center;justify-content:space-between;padding:clamp(5px,0.5vw,8px) 4px;border-bottom:1px solid var(--border);cursor:default;border-radius:2px;transition:background 0.12s,padding-left 0.12s;}
+.system-row:last-child{border-bottom:none;}
+.system-row:hover{background:rgba(255,255,255,0.03);padding-left:8px;}
+.system-name{font-size:var(--fs-sm);color:var(--text);}
+.system-sub{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);margin-top:1px;}
+.status-label{font-size:var(--fs-xs);letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px;flex-shrink:0;}
+.sl-ok{background:rgba(0,229,160,0.1);color:var(--accent);}
+.sl-warn{background:rgba(245,166,35,0.12);color:var(--warn);}
+.sl-offline{background:rgba(240,69,69,0.12);color:var(--danger);}
+
+/* RESOURCE BARS */
+.usage-list{display:flex;flex-direction:column;gap:clamp(5px,0.5vw,8px);}
+.usage-header{display:flex;justify-content:space-between;margin-bottom:3px;}
+.usage-label{font-size:var(--fs-sm);color:var(--text);}
+.usage-pct{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);}
+.trend-up{color:var(--warn);font-size:var(--fs-xs);}
+.trend-bad{color:var(--danger);font-size:var(--fs-xs);}
+.trend-good{color:var(--accent);font-size:var(--fs-xs);}
+.trend-flat{color:var(--muted);font-size:var(--fs-xs);}
+/* SYSTEM STATUS EXTRAS */
+.sys-uptime{color:var(--muted);font-size:var(--fs-xs);}
+/* CONNECTIONS CARD */
+.conn-total{font-family:var(--mono);font-size:var(--fs-lg);color:var(--text);text-align:center;margin:4px 0 8px;}
+.conn-grid{display:flex;flex-direction:column;gap:4px;}
+.conn-row{display:flex;justify-content:space-between;align-items:center;}
+.conn-dir{font-family:var(--mono);font-size:var(--fs-xs);letter-spacing:1px;text-transform:uppercase;}
+.conn-dir.in{color:var(--info);}
+.conn-dir.out{color:var(--accent);}
+.conn-val{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text);}
+.bar-track{height:4px;background:var(--border);border-radius:3px;position:relative;}
+.bar-track::before{content:'';position:absolute;top:0;bottom:0;left:65%;width:1px;background:rgba(245,166,35,0.5);z-index:2;}
+.bar-track::after{content:'';position:absolute;top:0;bottom:0;left:85%;width:1px;background:rgba(240,69,69,0.5);z-index:2;}
+.bar-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 0.6s ease;overflow:hidden;}
+.bar-fill.warn{background:var(--warn);}
+.bar-fill.danger{background:var(--danger);}
+
+/* SPARKLINE */
+.spark-wrap{flex-shrink:0;margin-bottom:3px;}
+canvas.spark{width:100%;height:clamp(28px,3vh,42px);display:block;}
+
+/* LOG FEED */
+.log-feed{font-family:var(--mono);font-size:var(--fs-xs);display:flex;flex-direction:column;gap:1px;overflow-y:auto;min-height:0;flex:1;}
+.log-feed::-webkit-scrollbar{width:3px;}
+.log-feed::-webkit-scrollbar-thumb{background:var(--border);}
+.log-line{color:var(--muted);line-height:1.8;white-space:nowrap;animation:fadeIn 0.3s ease;}
+.log-line:hover{color:var(--text);cursor:default;}
+.log-t{color:var(--info);margin-right:8px;}
+.l-ok{color:var(--accent);}
+.l-warn{color:var(--warn);}
+.l-err{color:var(--danger);}
+
+/* POKEMON MAP */
+.map-canvas-wrap{flex:1;min-height:0;border-radius:3px;overflow:visible;background:transparent;display:flex;align-items:center;justify-content:center;}
+canvas.threat-map{width:100%;height:100%;display:block;border-radius:3px;transform:perspective(700px) rotateX(22deg) rotateY(-3deg);transform-origin:center 60%;box-shadow:0 28px 60px rgba(0,0,0,0.7),0 0 0 1px rgba(56,182,255,0.12),0 0 40px rgba(56,182,255,0.06);background:#07101a;}
+.map-legend{display:flex;gap:8px;flex-shrink:0;margin-top:5px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);}
+.legend-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* DONUT */
+.donut-wrap{display:flex;align-items:center;gap:14px;}
+canvas.donut{display:block;}
+.donut-legend{display:flex;flex-direction:column;gap:5px;}
+.donut-row{display:flex;align-items:center;gap:7px;font-size:var(--fs-xs);}
+.donut-swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.donut-label{color:var(--muted);flex:1;text-transform:uppercase;letter-spacing:1px;}
+.donut-count{font-family:var(--mono);color:var(--text);}
+.donut-pct{font-family:var(--mono);color:var(--muted);}
+
+/* LOG FILTER */
+.log-chip{font-family:var(--mono);font-size:var(--fs-xs);opacity:0.75;letter-spacing:0.5px;}
+.log-type-bar{display:flex;gap:4px;margin-bottom:4px;flex-shrink:0;}
+.log-filter-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:2px;padding:2px 7px;cursor:pointer;font-size:var(--fs-xs);font-family:var(--mono);letter-spacing:0.5px;transition:all 0.18s;}
+.log-filter-btn:hover{color:var(--text);border-color:var(--muted);}
+.log-filter-btn.active{color:var(--info);border-color:var(--info);}
+/* CVE SPOTLIGHT */
+.cve-entry{animation:fadeIn 0.5s ease;}
+.cve-id{font-family:var(--mono);font-size:var(--fs-xs);color:var(--warn);letter-spacing:1px;margin-bottom:4px;}
+.cve-title{font-size:var(--fs-sm);font-weight:500;color:var(--text);margin-bottom:5px;line-height:1.4;}
+.cve-meta{display:flex;gap:8px;align-items:center;}
+.cve-cvss{font-family:var(--mono);font-size:var(--fs-xs);padding:1px 6px;border-radius:2px;font-weight:600;}
+.cvss-critical{background:rgba(240,69,69,0.15);color:var(--danger);}
+.cvss-high{background:rgba(245,166,35,0.15);color:var(--warn);}
+.cvss-medium{background:rgba(56,182,255,0.15);color:var(--info);}
+.cve-product{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);}
+.cve-dots{display:flex;gap:4px;margin-top:7px;}
+.cve-dot{width:5px;height:5px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.15s;}
+.cve-dot.active{background:var(--info);}
+.cve-top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.cve-status{font-family:var(--mono);font-size:var(--fs-xs);padding:1px 5px;border-radius:2px;letter-spacing:0.5px;text-transform:uppercase;flex-shrink:0;}
+.cve-s-hot{background:rgba(240,69,69,0.15);color:var(--danger);border:1px solid rgba(240,69,69,0.3);}
+.cve-s-poc{background:rgba(245,166,35,0.15);color:var(--warn);border:1px solid rgba(245,166,35,0.3);}
+.cve-s-patch{background:rgba(0,229,160,0.1);color:var(--accent);border:1px solid rgba(0,229,160,0.2);}
+.cve-desc{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);line-height:1.5;margin-bottom:6px;}
+.cve-score-bar{height:3px;background:var(--border);border-radius:2px;margin-top:7px;overflow:hidden;}
+.cve-score-fill{height:100%;border-radius:2px;transition:width 0.5s ease;}
+/* MITRE BREAKDOWN */
+.mitre-section{margin-top:8px;border-top:1px solid var(--border);padding-top:7px;}
+.mitre-section-label{font-size:var(--fs-xs);letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;}
+.mb-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;cursor:pointer;border-radius:3px;padding:2px 2px;transition:background 0.15s;}
+.mb-row:hover{background:rgba(255,255,255,0.04);}
+.mb-row.mb-active{background:rgba(56,182,255,0.08);border-left:2px solid var(--info);padding-left:4px;}
+.mb-label{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;}
+.mb-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.mb-fill{height:100%;background:var(--info);border-radius:2px;transition:width 0.4s ease;}
+.mb-count{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);width:14px;text-align:right;flex-shrink:0;}
+.mb-empty{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);}
+
+/* REGION ORIGIN TAG */
+.region-tag{font-family:var(--mono);font-size:var(--fs-xs);padding:1px 5px;border-radius:2px;border:1px solid currentColor;white-space:nowrap;flex-shrink:0;letter-spacing:0.5px;opacity:0.9;max-width:120px;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:middle;cursor:pointer;}
+.region-tag:hover{opacity:1;text-decoration:underline;}
+.detail-origin{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:3px;}
+.detail-origin-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.detail-origin-text{font-family:var(--mono);font-size:var(--fs-xs);flex:1;}
+.detail-origin-text strong{color:var(--text);}
+.detail-origin-text span{color:var(--muted);}
+.detail-bot{margin-bottom:12px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:3px;}
+.detail-bot-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.detail-bot-id{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 6px;border-radius:2px;border:1px solid currentColor;font-weight:700;letter-spacing:1px;}
+.detail-bot-name{font-family:var(--mono);font-size:var(--fs-xs);opacity:0.8;}
+.detail-bot-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;}
+.detail-bot-field{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);}
+.detail-bot-field strong{color:var(--text);}
+.detail-bot-sig{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);margin-top:5px;font-style:italic;border-top:1px solid var(--border);padding-top:5px;}
+.bot-id-tag{font-family:var(--mono);font-size:var(--fs-xs);padding:1px 5px;border-radius:2px;border:1px solid currentColor;white-space:nowrap;flex-shrink:0;letter-spacing:0.5px;opacity:0.9;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:rgba(0,0,0,0.2);border-radius:2px;}
+::-webkit-scrollbar-thumb{background:rgba(56,182,255,0.25);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(56,182,255,0.45);}
+
+/* SLA Timers */
+.sla-timer{font:bold var(--fs-xs) var(--mono);padding:1px 4px;border-radius:3px;margin-left:4px;vertical-align:middle;}
+.sla-ok{color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 27%,transparent);}
+.sla-amber{color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 27%,transparent);}
+.sla-red{color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 27%,transparent);}
+.sla-breach{color:#fff;background:var(--danger);border:none;animation:blink 1s infinite;}
+
+/* Kill chain phase in alert row */
+.kc-phase-row{font:var(--fs-xs) var(--mono);margin-top:2px;opacity:0.85;}
+
+/* Incident badge */
+.inc-badge{font:bold var(--fs-xs) var(--mono);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 27%,transparent);padding:1px 4px;border-radius:3px;margin-left:4px;vertical-align:middle;}
+
+/* Response action buttons */
+.alert-response{display:none;gap:4px;margin-top:5px;}
+.alert-item:hover .alert-response{display:flex;}
+.alert-response button{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 7px;font-size:11px;cursor:pointer;font-family:var(--mono);transition:border-color 0.15s,color 0.15s;}
+.alert-response button:hover{border-color:var(--accent);color:var(--accent);}
+.alert-response button.done{border-color:color-mix(in srgb,var(--accent) 53%,transparent);color:var(--accent);}
+
+/* IOC Feed */
+.ioc-row{display:grid;grid-template-columns:36px 1fr auto auto;gap:6px;align-items:center;font:var(--fs-xs) var(--mono);padding:3px 0;border-bottom:1px solid color-mix(in srgb,var(--border) 27%,transparent);cursor:pointer;border-radius:3px;}
+.ioc-row:hover{background:rgba(255,255,255,0.04);}
+.ioc-row:hover .ioc-value{color:var(--accent);}
+.ioc-type{font-weight:700;}
+.ioc-value{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ioc-feed{color:var(--muted);font-size:var(--fs-xs);white-space:nowrap;}
+.ioc-age{color:var(--muted);font-size:var(--fs-xs);white-space:nowrap;}
+
+/* EPSS bar */
+.cve-epss-row{display:flex;align-items:center;gap:6px;margin-top:5px;}
+.epss-bar-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.epss-bar-fill{height:100%;border-radius:2px;transition:width 0.4s;}
+
+/* SOC Metrics */
+.soc-metric-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(56,182,255,0.05);font:var(--fs-xs) var(--mono);}
+.soc-label{color:var(--muted);}
+.soc-val{color:var(--accent);font-weight:700;}
+.analyst-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;padding:3px 0;font:var(--fs-xs) var(--mono);}
+.analyst-id{color:var(--muted);white-space:nowrap;font-size:var(--fs-xs);}
+.analyst-bar-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.analyst-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.4s;}
+.analyst-count{color:var(--text);min-width:16px;text-align:right;}
+
+/* Bulk selected alert row */
+.alert-item.bulk-selected{background:color-mix(in srgb,var(--info) 8%,transparent) !important;border-left:2px solid var(--info);}
+
+/* Inc badge cursor */
+.inc-badge{cursor:pointer;}
+.inc-badge:hover{background:color-mix(in srgb,var(--warn) 15%,transparent);}
+
+/* Filter clear bar */
+.filter-clear-bar{font:var(--fs-xs) var(--mono);color:var(--warn);padding:4px 8px;background:color-mix(in srgb,var(--warn) 8%,transparent);border-radius:3px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.filter-clear-bar button{background:none;border:1px solid color-mix(in srgb,var(--warn) 27%,transparent);color:var(--warn);border-radius:2px;padding:1px 6px;cursor:pointer;font:var(--fs-xs) var(--mono);}
+.filter-clear-bar button:hover{background:var(--warn);color:var(--bg);}
+
+/* ── SESSION TIMELINE ── */
+.timeline-strip{background:var(--surface);border-top:1px solid var(--border);padding:4px 8px 6px;flex-shrink:0;}
+.timeline-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.timeline-title{font:bold var(--fs-xs) var(--mono);color:var(--muted);letter-spacing:1.5px;}
+.timeline-toggle{background:none;border:none;color:var(--muted);font:var(--fs-xs) var(--mono);cursor:pointer;padding:0 4px;}
+.timeline-toggle:hover{color:var(--text);}
+#timelineCanvas{width:100%;height:32px;display:block;cursor:crosshair;}
+
+/* ── MITRE HEATMAP MODAL ── */
+.heatmap-overlay{position:fixed;inset:0;background:rgba(4,13,20,0.88);z-index:600;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+.heatmap-panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px;width:min(96vw,1100px);max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.7);}
+.heatmap-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.heatmap-panel-title{font:bold 13px var(--sans);color:var(--text);letter-spacing:2px;}
+.heatmap-close{background:none;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 8px;cursor:pointer;font:var(--fs-xs) var(--mono);}
+.heatmap-close:hover{background:var(--border);color:var(--text);}
+.heatmap-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:2px;}
+.hm-tactic{font:bold 8px var(--mono);color:var(--muted);text-align:center;padding:4px 2px;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+.hm-cell{font:7px var(--mono);color:var(--muted);padding:3px 2px;border-radius:2px;text-align:center;cursor:pointer;line-height:1.3;transition:filter 0.15s;}
+.hm-cell:hover{filter:brightness(1.4);color:var(--text);}
+.hm-cell.hm-hit-1{background:rgba(56,182,255,0.18);color:#38b6ff;}
+.hm-cell.hm-hit-2{background:rgba(245,166,35,0.22);color:#f5a623;}
+.hm-cell.hm-hit-3{background:rgba(240,69,69,0.28);color:#f04545;}
+.hm-cell.hm-active{outline:1px solid var(--accent);}
+.hm-legend{display:flex;gap:12px;margin-top:10px;font:var(--fs-xs) var(--mono);color:var(--muted);}
+.hm-legend-dot{width:8px;height:8px;border-radius:1px;display:inline-block;margin-right:4px;}
+
+/* ── BULK SELECT ── */
+.bulk-bar{display:none;align-items:center;gap:8px;padding:5px 8px;background:color-mix(in srgb,var(--info) 10%,transparent);border:1px solid color-mix(in srgb,var(--info) 30%,transparent);border-radius:3px;margin-bottom:4px;font:var(--fs-xs) var(--mono);flex-shrink:0;}
+.bulk-bar.visible{display:flex;}
+.bulk-count{color:var(--info);font-weight:700;flex:1;}
+.bulk-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:2px;padding:2px 7px;cursor:pointer;font:var(--fs-xs) var(--mono);}
+.bulk-btn:hover{background:var(--border);color:var(--text);}
+.bulk-btn.danger:hover{background:var(--danger);border-color:var(--danger);color:#fff;}
+.alert-checkbox{width:12px;height:12px;accent-color:var(--info);cursor:pointer;flex-shrink:0;}
+.bulk-mode .alert-item{padding-left:4px;}
+
+/* ── INCIDENT MODAL ── */
+.inc-overlay{position:fixed;inset:0;background:rgba(4,13,20,0.88);z-index:600;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+.inc-panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px;width:min(94vw,680px);max-height:86vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.7);}
+.inc-panel-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.inc-panel-id{font:bold 14px var(--mono);color:var(--warn);}
+.inc-panel-meta{font:var(--fs-xs) var(--mono);color:var(--muted);margin-top:2px;}
+.inc-panel-close{background:none;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 8px;cursor:pointer;font:var(--fs-xs) var(--mono);}
+.inc-tl{height:20px;width:100%;position:relative;background:var(--bg);border-radius:3px;margin:10px 0;}
+.inc-section-label{font:bold var(--fs-xs) var(--mono);color:var(--muted);letter-spacing:1.5px;margin:10px 0 5px;}
+.inc-alert-row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:3px;font:var(--fs-xs) var(--mono);}
+.inc-alert-row:hover{background:rgba(255,255,255,0.03);}
+.inc-playbook-step{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font:var(--fs-xs) var(--mono);color:var(--text);}
+.inc-playbook-step input[type=checkbox]{accent-color:var(--accent);margin-top:1px;flex-shrink:0;cursor:pointer;}
+.inc-playbook-step.done{color:var(--muted);text-decoration:line-through;}
+.inc-notes{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);font:var(--fs-xs) var(--mono);padding:6px;resize:vertical;min-height:54px;box-sizing:border-box;margin-top:4px;}
+.inc-notes:focus{outline:none;border-color:var(--info);}
+.inc-close-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:3px 10px;cursor:pointer;font:var(--fs-xs) var(--mono);margin-top:8px;}
+.inc-close-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+.inc-reopen-btn{background:none;border:1px solid var(--warn);color:var(--warn);border-radius:3px;padding:3px 10px;cursor:pointer;font:var(--fs-xs) var(--mono);margin-top:8px;}
+
+/* ── RADAR CHART ── */
+#radarCanvas{width:100%;height:130px;display:block;}
+.radar-label-row{display:flex;justify-content:space-around;flex-wrap:wrap;gap:2px;margin-top:4px;}
+.radar-label{font:var(--fs-xs) var(--mono);color:var(--muted);display:flex;align-items:center;gap:4px;}
+.radar-label-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* ── ANALYST NOTES ── */
+.notes-icon{font-size:var(--fs-xs);color:var(--info);cursor:help;margin-left:3px;}
+.detail-notes-label{font:bold var(--fs-xs) var(--mono);color:var(--muted);letter-spacing:1px;margin:10px 0 4px;}
+.detail-notes{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);font:var(--fs-xs) var(--mono);padding:6px;resize:vertical;min-height:60px;box-sizing:border-box;}
+.detail-notes:focus{outline:none;border-color:var(--info);}
+
+/* Shift Handoff Banner */
+.handoff-bar{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;overflow:hidden;flex-shrink:0;}
+.handoff-toggle{background:none;border:none;color:var(--muted);font:bold var(--fs-xs) var(--mono);padding:6px 10px;cursor:pointer;width:100%;text-align:left;letter-spacing:1px;}
+.handoff-toggle:hover{color:var(--accent);}
+.handoff-text{font:var(--fs-xs) var(--mono);color:var(--text);padding:4px 10px 8px;line-height:2;}
+
+/* ── FEATURE 5: TRIAGE SCORE ── */
+.triage-score{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.triage-bar{width:32px;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden;}
+.triage-fill{height:100%;border-radius:2px;transition:width 0.3s;}
+.triage-fp{background:var(--accent);}.triage-amb{background:var(--warn);}.triage-tp{background:var(--danger);}
+.triage-pct{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);white-space:nowrap;}
+.triage-detail{border-top:1px solid rgba(56,182,255,0.07);padding-top:8px;margin-top:8px;}
+.triage-detail-title{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;}
+.triage-row{display:flex;justify-content:space-between;font-size:var(--fs-xs);font-family:var(--mono);padding:2px 0;color:var(--muted);}
+.triage-row span:last-child{color:var(--text);}
+
+/* ── FEATURE 3: SOAR AUTOMATION FEED ── */
+.soar-feed{display:flex;flex-direction:column;gap:3px;overflow-y:auto;min-height:0;flex:1;padding:4px 0;}
+.soar-row{display:flex;align-items:flex-start;gap:6px;padding:4px 6px;border-radius:3px;background:rgba(255,255,255,0.02);font-size:var(--fs-xs);font-family:var(--mono);animation:slideIn 0.3s ease both;}
+.soar-icon{flex-shrink:0;}.soar-text{flex:1;color:var(--text);line-height:1.4;}.soar-time{color:var(--muted);flex-shrink:0;}
+.soar-badge{font-size:var(--fs-xs);padding:1px 5px;border-radius:2px;flex-shrink:0;letter-spacing:0.5px;}
+.soar-done{background:rgba(0,229,160,0.12);color:var(--accent);border:1px solid rgba(0,229,160,0.2);}
+.soar-pend{background:rgba(245,166,35,0.12);color:var(--warn);border:1px solid rgba(245,166,35,0.2);}
+.soar-fail{background:rgba(240,69,69,0.12);color:var(--danger);border:1px solid rgba(240,69,69,0.2);}
+
+/* ── FEATURE 7: EXECUTIVE KPI BAR ── */
+.exec-bar{display:none;align-items:center;justify-content:space-around;padding:8px 20px;background:color-mix(in srgb,var(--surface) 95%,#000);border-bottom:1px solid var(--border);flex-shrink:0;gap:10px;animation:fadeDown 0.3s ease both;}
+.exec-bar.open{display:flex;}
+.exec-kpi{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.exec-gauge{width:52px;height:52px;border-radius:50%;background:conic-gradient(rgba(255,255,255,0.07) 0deg);transition:background 0.6s;}
+.exec-label{font-size:var(--fs-xs);letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;text-align:center;}
+.exec-val{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text);}
+
+/* ── FEATURE 4: DETECTION COVERAGE GRID ── */
+.coverage-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:2px;margin-top:6px;}
+.cov-cell{height:10px;border-radius:1px;cursor:pointer;transition:opacity 0.12s;}
+.cov-cell:hover{opacity:0.65;}
+.cov-cell.gap{background:rgba(255,255,255,0.06);}.cov-cell.covered{background:rgba(56,182,255,0.38);}
+.cov-cell.active{background:rgba(245,166,35,0.65);}.cov-cell.hot{background:rgba(240,69,69,0.78);}
+.coverage-legend{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.cov-leg{font-size:var(--fs-xs);font-family:var(--mono);}
+.cov-gap{color:rgba(255,255,255,0.35);}.cov-covered{color:var(--info);}.cov-active{color:var(--warn);}.cov-hot{color:var(--danger);}
+
+/* ── FEATURE 2: THREAT HUNT WORKBENCH ── */
+.hunt-bar{display:flex;align-items:center;gap:5px;padding:5px 0 2px;flex-wrap:wrap;flex-shrink:0;}
+.hunt-select{font-family:var(--mono);font-size:var(--fs-xs);background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 5px;cursor:pointer;}
+.hunt-input{flex:1;font-family:var(--mono);font-size:var(--fs-xs);background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:3px;padding:3px 7px;min-width:80px;}
+.hunt-input:focus{outline:none;border-color:rgba(56,182,255,0.4);}
+.hunt-btn{font-family:var(--mono);font-size:var(--fs-xs);font-weight:600;padding:3px 10px;border-radius:3px;background:rgba(56,182,255,0.12);border:1px solid rgba(56,182,255,0.35);color:var(--info);cursor:pointer;transition:all 0.15s;}
+.hunt-btn:hover{background:rgba(56,182,255,0.22);}
+.hunt-chip{font-family:var(--mono);font-size:var(--fs-xs);padding:2px 8px;border-radius:3px;cursor:pointer;}
+.hunt-chip.hc-alerts{background:rgba(240,69,69,0.15);color:var(--danger);border:1px solid rgba(240,69,69,0.3);}
+.hunt-chip.hc-iocs{background:rgba(245,166,35,0.15);color:var(--warn);border:1px solid rgba(245,166,35,0.3);}
+.hunt-chip.hc-logs{background:rgba(56,182,255,0.12);color:var(--info);border:1px solid rgba(56,182,255,0.3);}
+.hunt-presets{display:flex;align-items:center;gap:5px;flex-shrink:0;padding-bottom:5px;}
+.hunt-presets button{font-family:var(--mono);font-size:var(--fs-xs);background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 7px;cursor:pointer;}
+.hunt-presets button:hover{border-color:var(--muted);color:var(--text);}
+.preset-label{font-size:var(--fs-xs);color:var(--muted);letter-spacing:1px;}
+
+/* ── FEATURE 8: PACKET EVIDENCE ── */
+.detail-pcap{border-top:1px solid rgba(56,182,255,0.07);margin-top:10px;}
+.pcap-header{display:flex;justify-content:space-between;padding:8px 0 4px;cursor:pointer;font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;transition:color 0.15s;}
+.pcap-header:hover{color:var(--text);}
+.pcap-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:var(--fs-xs);margin-bottom:8px;}
+.pcap-table th{color:var(--muted);text-align:left;padding:2px 4px;border-bottom:1px solid var(--border);}
+.pcap-table td{padding:2px 4px;border-bottom:1px solid rgba(255,255,255,0.03);}
+.pcap-table tr:hover td{background:rgba(56,182,255,0.04);}
+.proto-tcp{color:var(--info);}.proto-udp{color:var(--accent);}.proto-icmp{color:var(--warn);}
+.hex-dump{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);white-space:pre;line-height:1.7;background:rgba(0,0,0,0.2);border-radius:3px;padding:6px 8px;margin-bottom:6px;overflow-x:auto;}
+.pcap-copy{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 10px;background:rgba(56,182,255,0.10);border:1px solid rgba(56,182,255,0.25);color:var(--info);border-radius:3px;cursor:pointer;}
+
+/* ── FEATURE 6: ACTOR DOSSIER ── */
+.actor-overlay{position:fixed;inset:0;background:rgba(4,13,20,0.5);z-index:700;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.actor-overlay.open{opacity:1;pointer-events:all;}
+.actor-panel{position:absolute;right:0;top:0;bottom:0;width:320px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;transform:translateX(100%);transition:transform 0.25s;}
+.actor-overlay.open .actor-panel{transform:translateX(0);}
+.actor-hdr{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.actor-flag{font-size:26px;flex-shrink:0;}
+.actor-name{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text);font-weight:600;}
+.actor-alias{font-size:var(--fs-xs);color:var(--muted);}
+.actor-sec-title{font-size:var(--fs-xs);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;margin-top:10px;}
+.actor-ttp{display:inline-block;font-family:var(--mono);font-size:var(--fs-xs);padding:2px 6px;border-radius:3px;background:rgba(240,69,69,0.12);color:var(--danger);border:1px solid rgba(240,69,69,0.25);margin:2px;}
+.actor-tool{display:inline-block;font-family:var(--mono);font-size:var(--fs-xs);padding:2px 6px;border-radius:3px;background:rgba(245,166,35,0.10);color:var(--warn);border:1px solid rgba(245,166,35,0.2);margin:2px;}
+.actor-campaign{font-size:var(--fs-xs);font-family:var(--mono);color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(56,182,255,0.05);}
+.actor-close-btn{margin-left:auto;background:none;border:1px solid var(--border);color:var(--muted);border-radius:3px;padding:2px 8px;cursor:pointer;font:var(--fs-xs) var(--mono);}
+.actor-close-btn:hover{color:var(--text);border-color:var(--muted);}
+.btn-actor{font-family:var(--mono);font-size:var(--fs-xs);padding:3px 10px;background:rgba(0,229,160,0.10);border:1px solid rgba(0,229,160,0.3);color:var(--accent);border-radius:3px;cursor:pointer;transition:all 0.15s;}
+.btn-actor:hover{background:rgba(0,229,160,0.2);}
+
+/* ── FEATURE 1: LATERAL MOVEMENT GRAPH ── */
+.lm-card-canvas{width:100%;flex:1;min-height:0;display:block;cursor:crosshair;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="logo">Secure<span>Watch</span></div>
+  <div class="topbar-right">
+    <div class="search-wrap">
+      <span class="search-icon">&#9906;</span>
+      <input type="text" id="searchInput" placeholder="Search alerts&hellip;">
+    </div>
+    <div class="threat-ring" id="threatRing" title="Threat Score">
+      <div class="threat-ring-inner" id="threatScore">0</div>
+    </div>
+    <button class="icon-btn" id="dlBtn" title="Download dashboard">&#8595; SAVE</button>
+    <button class="icon-btn" id="muteBtn">SND ON</button>
+    <button class="icon-btn" id="kbdBtn">? KEY</button>
+    <button class="icon-btn" onclick="toggleExecBar()" title="Executive risk overview">EXEC</button>
+    <div class="threatcon-badge" id="threatconBadge">
+      <span class="threatcon-dot" id="threatconDot"></span>
+      <span id="threatconLabel">THREATCON 5</span>
+      <span class="threatcon-sub" id="threatconSub">Routine</span>
+    </div>
+    <div class="status-pill"><div class="dot dot-red"></div><span id="critCount">3</span>&nbsp;Critical</div>
+    <div class="status-pill"><div class="dot dot-amber"></div>Scanning</div>
+    <div class="status-pill analyst-pill">&#9873; ANALYST-01</div>
+    <div class="clock" id="sessionTimer" title="Session time">00:00:00</div>
+    <div class="clock" id="clock">--:--:-- UTC</div>
+  </div>
+  <div class="topbar-accent" id="topbarAccent"></div>
+</nav>
+
+<!-- EXECUTIVE KPI BAR -->
+<div class="exec-bar" id="execBar">
+  <div class="exec-kpi"><div class="exec-gauge" id="eg0"></div><div class="exec-label">RISK SCORE</div><div class="exec-val" id="ev0">—</div></div>
+  <div class="exec-kpi"><div class="exec-gauge" id="eg1"></div><div class="exec-label">DET. COVERAGE</div><div class="exec-val" id="ev1">—%</div></div>
+  <div class="exec-kpi"><div class="exec-gauge" id="eg2"></div><div class="exec-label">EXPOSURE WINDOW</div><div class="exec-val" id="ev2">—</div></div>
+  <div class="exec-kpi"><div class="exec-gauge" id="eg3"></div><div class="exec-label">PLAYBOOK OPS</div><div class="exec-val" id="ev3">—%</div></div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- KEYBOARD OVERLAY -->
+<div class="kbd-overlay" id="kbdOverlay">
+  <div class="kbd-panel">
+    <h3>Keyboard Shortcuts</h3>
+    <div class="kbd-grid">
+      <span class="kbd-key">J / &darr;</span><span class="kbd-desc">Next alert</span>
+      <span class="kbd-key">K / &uarr;</span><span class="kbd-desc">Previous alert</span>
+      <span class="kbd-key">Enter</span><span class="kbd-desc">Open alert details</span>
+      <span class="kbd-key">A</span><span class="kbd-desc">Acknowledge selected</span>
+      <span class="kbd-key">D</span><span class="kbd-desc">Dismiss selected</span>
+      <span class="kbd-key">/</span><span class="kbd-desc">Focus search</span>
+      <span class="kbd-key">M</span><span class="kbd-desc">Toggle sound</span>
+      <span class="kbd-key">Esc</span><span class="kbd-desc">Close / clear</span>
+      <span class="kbd-key">?</span><span class="kbd-desc">This help</span>
+    </div>
+    <div class="kbd-close-row"><button class="card-action" id="kbdClose">Close</button></div>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-panel">
+    <button class="detail-close" id="detailClose">&#x2715;</button>
+    <div class="detail-sev" id="dSev"></div>
+    <div class="detail-title" id="dTitle"></div>
+    <div class="detail-grid">
+      <div class="detail-field"><label>Source</label><span id="dSrc"></span></div>
+      <div class="detail-field"><label>Target</label><span id="dDst"></span></div>
+      <div class="detail-field"><label>Detected</label><span id="dTime"></span></div>
+      <div class="detail-field"><label>Rule ID</label><span id="dRule"></span></div>
+    </div>
+    <div class="detail-origin" id="dOrigin">
+      <div class="detail-origin-dot" id="dOriginDot"></div>
+      <div class="detail-origin-text"><strong id="dOriginRegion"></strong> <span id="dOriginActor"></span></div>
+    </div>
+    <div class="detail-bot" id="dBot" style="display:none">
+      <div class="detail-bot-header">
+        <span class="detail-bot-id" id="dBotId"></span>
+        <span class="detail-bot-name" id="dBotName"></span>
+      </div>
+      <div class="detail-bot-grid">
+        <div class="detail-bot-field">Type: <strong id="dBotType"></strong></div>
+        <div class="detail-bot-field">Operator: <strong id="dBotOp"></strong></div>
+        <div class="detail-bot-field">First seen: <strong id="dBotFirst"></strong></div>
+        <div class="detail-bot-field">Attacks: <strong id="dBotCount"></strong></div>
+      </div>
+      <div class="detail-bot-sig" id="dBotSig"></div>
+    </div>
+    <div class="detail-killchain" id="dKillChain"></div>
+    <div class="detail-mitre">
+      <label>MITRE ATT&amp;CK</label>
+      <div class="mitre-tags-row" id="dMitre"></div>
+    </div>
+    <div class="detail-rec" id="dRec"></div>
+    <div class="detail-intel" id="dIntel" style="display:none">
+      <div class="detail-intel-header">
+        <span class="detail-intel-type" id="dIntelType"></span>
+        <span class="detail-intel-goal" id="dIntelGoal"></span>
+      </div>
+      <div class="detail-intel-section">
+        <div class="detail-intel-label">How it works</div>
+        <div class="detail-intel-text" id="dIntelHow"></div>
+      </div>
+      <div class="detail-intel-section">
+        <div class="detail-intel-label">Defence</div>
+        <div class="detail-intel-text" id="dIntelDefend"></div>
+      </div>
+    </div>
+    <div class="detail-notes-label">ANALYST NOTES</div>
+    <textarea class="detail-notes" id="dNotes" placeholder="Add notes for this alert..." oninput="saveNote()"></textarea>
+    <div class="detail-pcap">
+      <div class="pcap-header" onclick="togglePCAP()">
+        <span>PACKET EVIDENCE</span>
+        <span id="pcapToggle">▶ expand</span>
+      </div>
+      <div class="pcap-body" id="pcapBody" style="display:none">
+        <table class="pcap-table" id="pcapTable"></table>
+        <div class="hex-dump" id="hexDump"></div>
+        <button class="pcap-copy" onclick="copyPCAP()">COPY EVIDENCE</button>
+      </div>
+    </div>
+    <div id="triageDetailSection"></div>
+    <div class="detail-footer">
+      <button class="btn-ack" id="dAck">Acknowledge</button>
+      <button class="btn-dismiss" id="dDismiss">Dismiss</button>
+      <button class="btn-actor" id="dActorBtn" onclick="openActor(currentAlert && currentAlert.region)">ACTOR ›</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- LEFT COLUMN -->
+  <div class="col">
+    <div class="card">
+      <div class="card-header"><div class="card-title">System Status</div></div>
+      <div class="system-list" id="systemList"></div>
+    </div>
+    <div class="card grow">
+      <div class="card-header"><div class="card-title">Resource Usage</div></div>
+      <div class="usage-list">
+        <div><div class="usage-header"><span class="usage-label">CPU</span><span class="usage-pct" id="cpuPct">38%</span></div><div class="bar-track"><div class="bar-fill" id="cpuBar" style="width:38%"></div></div></div>
+        <div><div class="usage-header"><span class="usage-label">Memory</span><span class="usage-pct" id="memPct">71%</span></div><div class="bar-track"><div class="bar-fill warn" id="memBar" style="width:71%"></div></div></div>
+        <div><div class="usage-header"><span class="usage-label">Network I/O</span><span class="usage-pct" id="netPct">52%</span></div><div class="bar-track"><div class="bar-fill" id="netBar" style="width:52%"></div></div></div>
+        <div><div class="usage-header"><span class="usage-label">Disk</span><span class="usage-pct" id="dskPct">89%</span></div><div class="bar-track"><div class="bar-fill danger" id="dskBar" style="width:89%"></div></div></div>
+      </div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-header"><div class="card-title">SOC METRICS</div></div>
+      <div class="soc-metric-row"><span class="soc-label">MTTD</span><span id="mttdVal" class="soc-val">&#8212;</span></div>
+      <div class="soc-metric-row"><span class="soc-label">MTTR</span><span id="mttrVal" class="soc-val">&#8212;</span></div>
+      <div class="soc-metric-row"><span class="soc-label">FP Rate</span><span id="fpRateVal" class="soc-val">0%</span></div>
+      <div class="card-header" style="margin-top:8px;padding-bottom:4px"><div class="card-title">ANALYST LOAD</div></div>
+      <div id="analystLoad"></div>
+      <div class="card-header" style="margin-top:10px;padding-bottom:4px"><div class="card-title">THREAT POSTURE</div></div>
+      <canvas id="radarCanvas"></canvas>
+      <div class="radar-label-row" id="radarLabels"></div>
+    </div>
+    <div class="card grow" id="soarCard">
+      <div class="card-header">
+        <span class="card-title">SOAR AUTOMATION</span>
+        <span id="soarCount" style="font-size:var(--fs-xs);font-family:var(--mono);color:var(--accent)">0 today</span>
+      </div>
+      <div class="soar-feed" id="soarFeed"></div>
+    </div>
+  </div>
+
+  <!-- MIDDLE COLUMN -->
+  <div class="main-col">
+    <div class="stats-grid">
+      <div class="stat-card red" onclick="setFilterFromCard('crit')" title="Filter alerts to Critical" style="cursor:pointer"><div class="stat-label">Active Threats</div><div class="stat-value" id="statThreats">047</div><div class="stat-delta"><span class="up">&#8593; 12</span> this hour</div></div>
+      <div class="stat-card amber" onclick="toggleHandoff()" title="Open shift summary" style="cursor:pointer"><div class="stat-label">Open Incidents</div><div class="stat-value" id="statIncidents">003</div><div class="stat-delta"><span class="up">&#8593; 1</span> since 08:00</div></div>
+      <div class="stat-card cyan"><div class="stat-label">Packets / sec</div><div class="stat-value">2.4M</div><div class="stat-delta"><span class="down">&#8595; Live</span></div></div>
+      <div class="stat-card"><div class="stat-label">Systems Online</div><div class="stat-value">218</div><div class="stat-delta"><span class="down">&#8595; 2</span> offline</div></div>
+    </div>
+    <div class="handoff-bar">
+      <button class="handoff-toggle" onclick="toggleHandoff()">&#8862; SHIFT SUMMARY</button>
+      <div id="handoffBody" style="display:none;"></div>
+    </div>
+    <div class="card grow">
+      <div class="card-header">
+        <div class="card-title">Live Threat Feed</div>
+        <span class="card-action" id="clearAcked">Clear Acknowledged</span>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn crit" data-filter="crit">Critical</button>
+        <button class="filter-btn high" data-filter="high">High</button>
+        <button class="filter-btn" data-filter="med">Medium</button>
+      </div>
+      <div class="hunt-bar" id="huntBar">
+        <select id="huntField" class="hunt-select">
+          <option value="ip">IP</option><option value="hostname">Hostname</option>
+          <option value="rule">Rule ID</option><option value="mitre">MITRE</option><option value="name">Alert Name</option>
+        </select>
+        <input id="huntInput" class="hunt-input" placeholder="hunt query…" onkeydown="if(event.key==='Enter')runHunt()"/>
+        <button class="hunt-btn" onclick="runHunt()">HUNT ›</button>
+        <div id="huntResults" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="hunt-presets">
+        <span class="preset-label">SAVED:</span>
+        <button onclick="quickHunt('mitre','Lateral Movement')">Lateral Mvmt</button>
+        <button onclick="quickHunt('ip','10.0.')">Internal Pivot</button>
+        <button onclick="quickHunt('mitre','Exfiltration')">Exfiltration</button>
+      </div>
+      <div class="bulk-bar" id="bulkBar">
+        <span class="bulk-count" id="bulkCount">0 selected</span>
+        <button class="bulk-btn" onclick="bulkAck()">✓ ACK All</button>
+        <button class="bulk-btn danger" onclick="bulkDismiss()">× Dismiss</button>
+        <button class="bulk-btn" onclick="bulkTicket()">■ Ticket</button>
+        <button class="bulk-btn" onclick="clearBulkSelection()" style="margin-left:auto">Cancel</button>
+      </div>
+      <div class="alert-list" id="alertList"></div>
+    </div>
+    <div class="card" id="lmCard" style="flex-shrink:0;height:190px;display:flex;flex-direction:column;">
+      <div class="card-header">
+        <span class="card-title">LATERAL MOVEMENT</span>
+        <span id="lmNodeCount" style="font-size:var(--fs-xs);color:var(--muted)">0 nodes · click node to filter</span>
+      </div>
+      <canvas id="lmCanvas" class="lm-card-canvas"></canvas>
+    </div>
+    <div class="card" id="logCard" style="flex-shrink:0;max-height:240px;min-height:140px;">
+      <div class="card-header" style="flex-shrink:0;">
+        <div class="card-title">System Log</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="log-chip l-err" id="lcAlert">0 ALERT</span>
+          <span class="log-chip l-warn" id="lcWarn">0 WARN</span>
+          <span class="log-chip l-ok" id="lcOk">0 OK</span>
+          <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);" id="logCount">0 events</span>
+        </div>
+      </div>
+      <div class="log-type-bar">
+        <button class="log-filter-btn active" data-lf="all">All</button>
+        <button class="log-filter-btn" data-lf="ALERT">Alert</button>
+        <button class="log-filter-btn" data-lf="WARN">Warn</button>
+        <button class="log-filter-btn" data-lf="OK">OK</button>
+      </div>
+      <div class="spark-wrap"><canvas class="spark" id="sparkCanvas"></canvas></div>
+      <div class="log-feed" id="logFeed"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+    <div class="card" style="flex:2;min-height:0;">
+      <div class="card-header">
+        <div class="card-title">Pokemon World Map</div>
+        <span style="font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);" id="attackCount">0 active</span>
+      </div>
+      <div class="map-canvas-wrap">
+        <canvas class="threat-map" id="mapCanvas"></canvas>
+      </div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#f04545;box-shadow:0 0 4px #f04545"></div>Crit</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f5a623;box-shadow:0 0 4px #f5a623"></div>High</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#38b6ff;box-shadow:0 0 4px #38b6ff"></div>Med</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00e5a0;box-shadow:0 0 4px #00e5a0"></div>HQ</div>
+      </div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-header"><div class="card-title">Severity Breakdown</div></div>
+      <div class="donut-wrap">
+        <canvas class="donut" id="donutCanvas" width="76" height="76"></canvas>
+        <div class="donut-legend">
+          <div class="donut-row"><div class="donut-swatch" style="background:var(--danger)"></div><span class="donut-label">Critical</span><span class="donut-count" id="dCrit">0</span><span class="donut-pct" id="dCritPct"></span></div>
+          <div class="donut-row"><div class="donut-swatch" style="background:var(--warn)"></div><span class="donut-label">High</span><span class="donut-count" id="dHigh">0</span><span class="donut-pct" id="dHighPct"></span></div>
+          <div class="donut-row"><div class="donut-swatch" style="background:var(--info)"></div><span class="donut-label">Medium</span><span class="donut-count" id="dMed">0</span><span class="donut-pct" id="dMedPct"></span></div>
+        </div>
+      </div>
+      <div class="mitre-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <div class="mitre-section-label" style="margin-bottom:0">Top Tactics</div>
+          <button onclick="openHeatmap()" style="background:none;border:1px solid var(--border);color:var(--muted);font:var(--fs-xs) var(--mono);border-radius:2px;padding:1px 5px;cursor:pointer;" title="Open full MITRE ATT&CK matrix">Full Matrix &#8250;</button>
+        </div>
+        <div id="mitreBars"></div>
+        <div class="coverage-grid" id="coverageGrid"></div>
+        <div class="coverage-legend">
+          <span class="cov-leg cov-gap">■ GAP</span>
+          <span class="cov-leg cov-covered">■ COVERED</span>
+          <span class="cov-leg cov-active">■ ACTIVE</span>
+          <span class="cov-leg cov-hot">■ HOT</span>
+          <span id="coveragePct" style="margin-left:auto;font-family:var(--mono);font-size:var(--fs-xs);color:var(--accent)">—%</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-header">
+        <div class="card-title">CVE Spotlight</div>
+        <span class="card-action" id="cveNext">Next &rarr;</span>
+      </div>
+      <div id="cveSpotlight"></div>
+      <div class="cve-dots" id="cveDots"></div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-header">
+        <div class="card-title">IOC FEED</div>
+        <span class="live-dot" style="background:var(--danger);box-shadow:0 0 5px var(--danger);"></span>
+      </div>
+      <div id="iocList" style="display:flex;flex-direction:column;gap:2px;padding:2px 0;"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SESSION TIMELINE STRIP -->
+<div class="timeline-strip" id="timelineStrip">
+  <div class="timeline-header">
+    <span class="timeline-title">SESSION TIMELINE</span>
+    <span id="timelineEvtCount" style="font:var(--fs-xs) var(--mono);color:var(--muted);">0 events</span>
+    <button class="timeline-toggle" id="timelineToggle" onclick="toggleTimeline()">▲ hide</button>
+  </div>
+  <canvas id="timelineCanvas"></canvas>
+</div>
+
+<!-- MITRE HEATMAP MODAL -->
+<div class="heatmap-overlay" id="heatmapOverlay" style="display:none" onclick="if(event.target===this)closeHeatmap()">
+  <div class="heatmap-panel">
+    <div class="heatmap-panel-header">
+      <span class="heatmap-panel-title">MITRE ATT&amp;CK MATRIX</span>
+      <button class="heatmap-close" onclick="closeHeatmap()">Close ×</button>
+    </div>
+    <div class="heatmap-grid" id="heatmapGrid"></div>
+    <div class="hm-legend">
+      <span><span class="hm-legend-dot" style="background:rgba(56,182,255,0.35)"></span>1–2 hits</span>
+      <span><span class="hm-legend-dot" style="background:rgba(245,166,35,0.4)"></span>3–5 hits</span>
+      <span><span class="hm-legend-dot" style="background:rgba(240,69,69,0.45)"></span>6+ hits</span>
+      <span style="margin-left:auto;color:var(--accent)">Click cell to filter alerts</span>
+    </div>
+  </div>
+</div>
+
+<!-- INCIDENT DETAIL MODAL -->
+<div class="inc-overlay" id="incOverlay" style="display:none" onclick="if(event.target===this)closeIncModal()">
+  <div class="inc-panel" id="incPanel"></div>
+</div>
+
+<script>
+/* ── UTILS ── */
+const $ = id => document.getElementById(id);
+const p2 = n => String(n).padStart(2, '0');
+
+function relTime(ms) {
+  const d = Date.now() - ms;
+  if (d < 60000) return 'just now';
+  if (d < 3600000) return Math.floor(d / 60000) + 'm ago';
+  return Math.floor(d / 3600000) + 'h ago';
+}
+
+/* ── ALERT DATA ── */
+let nextId = 10;
+const ALERTS = [
+  { id:1, sev:'crit', name:'SQL Injection \u2014 /api/users',        src:'185.220.101.42', dst:'10.0.1.14',   rule:'IDS-8441', region:0, mitre:['Initial Access','Execution'],               rec:'Block source IP at perimeter firewall. Review WAF rules for <strong>/api/users</strong>. Rotate DB credentials.' },
+  { id:2, sev:'crit', name:'Lateral Movement \u2014 AD Forest',      src:'10.0.4.88',      dst:'10.0.4.12',   rule:'IDS-9001', region:4, mitre:['Lateral Movement','Privilege Escalation'],  rec:'Isolate host <strong>10.0.4.88</strong> immediately. Audit AD privilege escalation logs. Reset affected service accounts.' },
+  { id:3, sev:'high', name:'Brute Force SSH \u2014 3,441 attempts',  src:'92.118.37.110',  dst:'prod-srv-04', rule:'IDS-3210', region:1, mitre:['Credential Access'],                        rec:'Rate-limit SSH on <strong>prod-srv-04</strong>. Consider geo-blocking origin AS. Verify no successful auths.' },
+  { id:4, sev:'med',  name:'Unusual DNS Volume \u2014 WS-214',       src:'10.0.2.14',      dst:'8.8.8.8',     rule:'IDS-5502', region:5, mitre:['Command & Control','Exfiltration'],         rec:'Inspect <strong>WS-214</strong> for malware beaconing. Review DNS query logs for exfil patterns.' },
+  { id:5, sev:'med',  name:'TLS Cert Mismatch \u2014 cdn.internal',  src:'cdn.internal',   dst:'10.0.0.0/8',  rule:'PKI-0012', region:7, mitre:['Defense Evasion'],                         rec:'Renew certificate for <strong>cdn.internal</strong>. Expired 2 days ago. Check for MITM indicators.' },
+];
+let alertState = {};
+ALERTS.forEach(a => { alertState[a.id] = { acked: false, dismissed: false, arrivedAt: Date.now() - Math.floor(Math.random() * 900000), ackedAt: null, dismissedAt: null }; });
+
+/* ── SOC DATA ── */
+const SLA_MS = { crit: 15 * 60 * 1000, high: 60 * 60 * 1000, med: 4 * 60 * 60 * 1000 };
+const alertResponse = {};
+const INCIDENTS = [];
+let incidentCounter = 1;
+const IOC_FEEDS = ['VirusTotal','AbuseIPDB','OTX AlienVault','Shodan','Internal TI'];
+const IOC_LIST = [];
+let fpCount = 0;
+const ANALYSTS = [
+  { id:'ANALYST-01', cases:0 },
+  { id:'ANALYST-02', cases:0 },
+  { id:'ANALYST-03', cases:0 },
+];
+const ASSETS = [
+  { name:'AD Ctrl',  crit:'crown', ox:0.82, oy:0.37 },
+  { name:'SIEM',     crit:'high',  ox:0.91, oy:0.40 },
+  { name:'Billing',  crit:'crown', ox:0.88, oy:0.54 },
+  { name:'VPN GW',   crit:'medium',ox:0.84, oy:0.50 },
+];
+let showHandoff = false;
+
+/* Shared KC_MAP for renderAlerts + openDetail */
+const KC_MAP_GLOBAL = {'Reconnaissance':['Recon'],'Initial Access':['Initial Access'],'Execution':['Execution'],'Persistence':['Persistence'],'Privilege Escalation':['Execution'],'Defense Evasion':['Execution'],'Credential Access':['Initial Access'],'Discovery':['Recon'],'Lateral Movement':['Lateral Move'],'Collection':['Exfil'],'Command & Control':['C&C'],'Exfiltration':['Exfil'],'Impact':['Exfil']};
+
+const TEMPLATES = [
+  { sev:'crit', name:'Web Shell Detected \u2014 /uploads/img.php',    src:'10.0.3.55',    dst:'web-srv-01',  rule:'IDS-7701', region:2, mitre:['Persistence','Execution'],               rec:'Remove web shell immediately. Audit upload directory. Review server access logs for prior activity.' },
+  { sev:'crit', name:'Ransomware Pattern \u2014 SMB Encryption',       src:'10.0.5.22',    dst:'file-srv-02', rule:'IDS-9900', region:6, mitre:['Impact','Lateral Movement'],              rec:'Isolate affected hosts. Engage incident response. Do not pay ransom. Check shadow copy status.' },
+  { sev:'high', name:'C2 Beacon \u2014 Cobalt Strike Signature',       src:'45.33.32.156', dst:'10.0.1.88',   rule:'IDS-6601', region:3, mitre:['Command & Control'],                     rec:'Block C2 IP at firewall. Hunt for other infected hosts. Capture memory dump for forensics.' },
+  { sev:'high', name:'LDAP Enumeration \u2014 50k Queries',            src:'10.0.8.12',    dst:'dc01.corp',   rule:'IDS-4402', region:5, mitre:['Discovery','Credential Access'],          rec:'Investigate source host <strong>10.0.8.12</strong>. Enable LDAP signing. Alert AD admin team.' },
+  { sev:'high', name:'Privilege Escalation \u2014 Admin token reuse',  src:'10.0.2.90',    dst:'10.0.0.1',    rule:'IDS-5003', region:4, mitre:['Privilege Escalation'],                   rec:'Invalidate token. Force re-auth. Review PAM policies and restrict token lifetime.' },
+  { sev:'med',  name:'Port Scan \u2014 65k ports in 30s',              src:'77.88.21.44',  dst:'dmz-net',     rule:'IDS-1100', region:8, mitre:['Discovery','Reconnaissance'],             rec:'Block scanner IP. Review DMZ firewall rules. Verify no open services exposed unintentionally.' },
+  { sev:'med',  name:'Data Exfiltration \u2014 FTP outbound',          src:'10.0.6.33',    dst:'104.21.8.2',  rule:'IDS-8800', region:7, mitre:['Exfiltration'],                           rec:'Block outbound FTP at perimeter. Investigate source host. Review DLP policy.' },
+  { sev:'med',  name:'XSS Payload Detected \u2014 /search?q=',         src:'203.0.113.42', dst:'app-srv-03',  rule:'WAF-2201', region:0, mitre:['Initial Access'],                         rec:'WAF blocked the request. Review application input sanitisation. Update CSP headers.' },
+];
+
+/* ── ATTACK INTEL ── */
+const ATTACK_INTEL = {
+  'IDS-7701': { type:'Web Shell', goal:'Persistent backdoor access', how:'Attacker uploads a PHP/ASP script to a public-facing server via a file upload vulnerability. The shell accepts remote commands over HTTP, effectively giving the attacker a browser-accessible terminal inside your network.', defend:'Remove the file immediately. Audit all upload directories. Add server-side file-type validation and content inspection to block executable uploads.' },
+  'IDS-9900': { type:'Ransomware', goal:'Extortion via data encryption', how:'Malware propagates laterally over SMB, encrypting files on shared drives using AES-256. A ransom note is dropped. Shadow copies are typically wiped to block recovery without paying.', defend:'Isolate affected hosts now. Never pay the ransom. Restore from immutable backups. Enforce network segmentation to limit SMB spread.' },
+  'IDS-6601': { type:'C2 Beacon', goal:'Maintain persistent command channel', how:"A compromised host 'phones home' to an attacker-controlled server at regular intervals using Cobalt Strike's malleable C2 profile. Traffic mimics legitimate HTTPS to evade detection, awaiting instructions.", defend:'Block the C2 IP at the perimeter firewall. Perform memory forensics on the compromised host. Hunt for lateral spread using the same implant.' },
+  'IDS-4402': { type:'LDAP Enumeration', goal:'Map Active Directory for privilege escalation', how:'The attacker sends ~50,000 LDAP queries to enumerate all AD users, groups, GPOs, and ACLs. This reconnaissance feeds into later attacks like Kerberoasting or ACL abuse to gain admin rights.', defend:'Enable LDAP signing and channel binding. Alert on high-volume LDAP queries from non-admin hosts. Investigate the source immediately.' },
+  'IDS-5003': { type:'Privilege Escalation', goal:'Gain administrator / SYSTEM access', how:'A valid admin token was captured and is being re-used without re-authentication (pass-the-token). This allows the attacker to impersonate an administrator and access restricted systems and data.', defend:'Invalidate the token immediately. Audit token lifetime policies. Enable Credential Guard and restrict admin token creation to dedicated PAW workstations.' },
+  'IDS-1100': { type:'Port Scan', goal:'Network reconnaissance', how:'The attacker probed all 65,535 TCP ports on the DMZ network in under 30 seconds using a SYN scan. This maps open services (web servers, databases, VPNs) to build a target list for follow-on exploitation.', defend:"Block the scanner's IP. Review which services are unnecessarily exposed in the DMZ. Enable port-scan detection rules in your IDS/IPS." },
+  'IDS-8800': { type:'Data Exfiltration', goal:'Steal sensitive data', how:'Files are being transferred out via FTP — unencrypted and rarely needed in modern environments. The attacker may have established this channel during initial compromise and is now extracting data.', defend:'Block outbound FTP at the perimeter immediately. Identify what data was transferred. Review DLP policies to alert on bulk outbound transfers.' },
+  'WAF-2201': { type:'Cross-Site Scripting (XSS)', goal:"Steal session cookies / execute browser-side code", how:"A JavaScript payload was injected into the /search?q= parameter. If rendered unsanitised, it executes in victims' browsers — stealing session tokens, redirecting users, or performing actions on their behalf.", defend:'The WAF blocked this request. Verify all user inputs are HTML-encoded server-side. Strengthen the Content Security Policy header to disallow inline scripts.' },
+  'IDS-8441': { type:'SQL Injection', goal:'Bypass authentication or extract database contents', how:"Malicious SQL was appended to an API parameter (e.g. ' OR 1=1 --). If the query is not parameterised, the database executes the injected code, potentially exposing all user records.", defend:'Block the source IP. Switch all database queries to prepared statements. Rotate database credentials immediately in case data was already extracted.' },
+  'IDS-9001': { type:'Lateral Movement via AD', goal:'Pivot across the network to high-value targets', how:'Using previously stolen credentials or a forged Kerberos ticket (Pass-the-Hash / Golden Ticket), the attacker is moving between machines in the AD forest — escalating toward domain controllers.', defend:'Isolate host 10.0.4.88 immediately. Audit all recent AD authentications. Reset the KRBTGT account password twice to invalidate any forged tickets.' },
+  'IDS-3210': { type:'Brute Force SSH', goal:'Gain shell access via credential guessing', how:"Over 3,441 login attempts were made against prod-srv-04's SSH service. Automated tools cycle through username/password lists (credential stuffing or dictionary attacks) until a valid pair is found.", defend:'Rate-limit or geo-block the origin IP. Enforce SSH key-only authentication. Deploy fail2ban or similar to auto-ban repeat offenders.' },
+  'IDS-5502': { type:'DNS Tunnelling', goal:'Covert data exfiltration or C2 channel', how:'Unusually high DNS query volume from WS-214 suggests data is being encoded into DNS subdomain queries (e.g. data.attacker.com). DNS is rarely blocked by firewalls — a popular covert channel for malware.', defend:'Inspect DNS logs for repeated queries to unusual domains. Deploy a DNS security solution (e.g. Cisco Umbrella). Block the specific domains at the recursive resolver.' },
+  'PKI-0012': { type:'TLS Certificate Mismatch', goal:'Enable Man-in-the-Middle interception', how:'The certificate for cdn.internal has expired or does not match the expected fingerprint. This can indicate a MITM device intercepting internal TLS traffic — or a forgotten renewal. Both require investigation.', defend:'Renew the certificate immediately. Verify the certificate chain manually. Check for unexpected TLS inspection proxies between internal hosts and cdn.internal.' },
+};
+
+/* ── AUDIO ── */
+let soundEnabled = true, audioCtx = null;
+function playBeep(freq, dur) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.07, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch(e) {}
+}
+$('dlBtn').addEventListener('click', () => {
+  const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'securewatch-dashboard.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+$('muteBtn').addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  $('muteBtn').textContent = soundEnabled ? 'SND ON' : 'SND OFF';
+  $('muteBtn').classList.toggle('muted-active', !soundEnabled);
+});
+
+/* ── KBD OVERLAY ── */
+$('kbdBtn').addEventListener('click', () => $('kbdOverlay').classList.toggle('open'));
+$('kbdClose').addEventListener('click', () => $('kbdOverlay').classList.remove('open'));
+
+/* ── REGION INTEL ── */
+const REGION_INTEL = [
+  { name:'GALAR',  color:'#38b6ff', actor:'Macro Cosmos',       desc:'Lateral move via Macro Cosmos network'   },
+  { name:'SINNOH', color:'#a78bfa', actor:'Team Galactic',      desc:'Probe originating from Galactic servers' },
+  { name:'KANTO',  color:'#f04545', actor:'Team Rocket',        desc:'Classic Rocket-style intrusion attempt'  },
+  { name:'JOHTO',  color:'#f5a623', actor:'Shadow Syndicate',   desc:'Shadow intrusion from Johto node'        },
+  { name:'KALOS',  color:'#34d399', actor:'Team Flare',         desc:'Flare-type exploit fired from Kalos'     },
+  { name:'UNOVA',  color:'#60a5fa', actor:'Team Plasma',        desc:'Plasma network scan from Unova'          },
+  { name:'HOENN',  color:'#fb923c', actor:'Team Aqua',          desc:'Team Aqua breach from Hoenn coast'       },
+  { name:'PALDEA', color:'#e879f9', actor:'Area Zero Syndicate',desc:'Anomaly traced to Area Zero, Paldea'     },
+  { name:'ALOLA',  color:'#fbbf24', actor:'Aether Foundation',  desc:'C2 beacon from Alola beach node'         },
+];
+
+/* ── BOT PROFILES ── */
+const BOT_PROFILES = [
+  /* 0-GALAR  Macro Cosmos */
+  [
+    { id:'MC-01', name:'MC-Crawler 01', type:'Scanner',  operator:'Automated',      firstSeen:'2023-11', attackCount:112, signature:'Enumerates exposed SharePoint endpoints via crafted HTTP probes' },
+    { id:'MC-02', name:'MC-Crawler 02', type:'Exfil',    operator:'Semi-Auto',      firstSeen:'2024-02', attackCount:74,  signature:'Exfiltrates Office 365 OAuth tokens over encrypted channels'   },
+    { id:'MC-DX', name:'MC-Drone X',    type:'C2',       operator:'Human-Operated', firstSeen:'2024-07', attackCount:38,  signature:'Establishes persistent C2 beacons via DNS-over-HTTPS tunnelling' },
+  ],
+  /* 1-SINNOH  Team Galactic */
+  [
+    { id:'TG-A',  name:'Galactic-Alpha', type:'Recon',   operator:'Automated',      firstSeen:'2022-09', attackCount:203, signature:'Passive OS fingerprinting via ICMP TTL manipulation'            },
+    { id:'TG-B',  name:'Galactic-Beta',  type:'Exploit', operator:'Semi-Auto',      firstSeen:'2023-03', attackCount:91,  signature:'Deploys Log4Shell payloads against legacy JVM services'         },
+    { id:'TG-W',  name:'Galactic-Omega', type:'Wiper',   operator:'Human-Operated', firstSeen:'2024-11', attackCount:17,  signature:'Overwrites MBR on compromised endpoints pre-exfiltration'      },
+  ],
+  /* 2-KANTO  Team Rocket */
+  [
+    { id:'TR-001', name:'Rocket-Bot ALPHA', type:'Brute',   operator:'Automated',      firstSeen:'2021-06', attackCount:440, signature:'Credential stuffing via leaked combo lists at SSH/RDP'        },
+    { id:'TR-002', name:'Rocket-Bot BETA',  type:'Scanner', operator:'Automated',      firstSeen:'2021-06', attackCount:388, signature:'SYN-flood port scan across /16 subnets every 4 hours'        },
+    { id:'TR-GR',  name:'Giovanni-Remote',  type:'C2',      operator:'Human-Operated', firstSeen:'2023-01', attackCount:52,  signature:'Custom RAT with encrypted C2 channel mimicking HTTPS traffic' },
+  ],
+  /* 3-JOHTO  Shadow Syndicate */
+  [
+    { id:'SS-SH', name:'Shadow-Hook',    type:'Phish', operator:'Semi-Auto',  firstSeen:'2023-05', attackCount:167, signature:'Spear-phishing with lure documents embedding macro payloads'   },
+    { id:'SS-CR', name:'Shadow-Crawler', type:'Recon', operator:'Automated',  firstSeen:'2023-08', attackCount:134, signature:'Crawls HR portals for employee email enumeration'             },
+  ],
+  /* 4-KALOS  Team Flare */
+  [
+    { id:'FL-EX', name:'Flare-Exploit', type:'Exploit', operator:'Semi-Auto',      firstSeen:'2023-12', attackCount:88, signature:'Targets unpatched Citrix Bleed CVE-2023-4966 on ADC gateways' },
+    { id:'FL-XV', name:'Flare-XV',      type:'Exfil',   operator:'Human-Operated', firstSeen:'2024-04', attackCount:43, signature:'Data staged in encrypted ZIP archives before exfil via SFTP'  },
+  ],
+  /* 5-UNOVA  Team Plasma */
+  [
+    { id:'PL-NET', name:'Plasma-Net',   type:'Scanner', operator:'Automated',      firstSeen:'2022-11', attackCount:291, signature:'Mass scanning for exposed Kubernetes API servers on port 6443'  },
+    { id:'PL-G',   name:'Plasma-Ghost', type:'C2',      operator:'Semi-Auto',      firstSeen:'2023-06', attackCount:76,  signature:'Beaconing via ICMP echo tunnelling to avoid firewall detection' },
+    { id:'PL-N',   name:'N-Protocol',   type:'Exfil',   operator:'Human-Operated', firstSeen:'2024-01', attackCount:29,  signature:'Slow exfil (~1KB/s) embedded in DNS TXT record queries'        },
+  ],
+  /* 6-HOENN  Team Aqua */
+  [
+    { id:'AQ-D1', name:'Aqua-Diver 1', type:'Scanner', operator:'Automated', firstSeen:'2022-04', attackCount:315, signature:'Probes maritime SCADA systems and Modbus TCP ports'            },
+    { id:'AQ-D2', name:'Aqua-Diver 2', type:'Exploit', operator:'Semi-Auto', firstSeen:'2022-08', attackCount:149, signature:'Exploits default credentials on Telnet-enabled IoT devices'    },
+  ],
+  /* 7-PALDEA  Area Zero Syndicate */
+  [
+    { id:'AZ-P0', name:'Paradox-0', type:'Unknown', operator:'Automated', firstSeen:'2024-09', attackCount:34, signature:'Anomalous traffic patterns — classification model inconclusive'      },
+    { id:'AZ-P1', name:'Paradox-1', type:'Exploit', operator:'Unknown',   firstSeen:'2024-10', attackCount:21, signature:'Zero-day chain targeting GPU driver stack — attribution unclear'     },
+  ],
+  /* 8-ALOLA  Aether Foundation */
+  [
+    { id:'AF-C1', name:'Aether-C2-1',  type:'C2',    operator:'Automated', firstSeen:'2023-07', attackCount:98, signature:'Beacon over HTTPS to CDN-fronted C2 nodes, 30s jitter'         },
+    { id:'AF-UB', name:'Ultra-Beacon', type:'Recon',  operator:'Semi-Auto', firstSeen:'2024-03', attackCount:61, signature:'Passive WLAN sniffing near hospitality networks in Alola node' },
+  ],
+];
+function getBotForAlert(alertId, regionIdx) {
+  const pool = BOT_PROFILES[regionIdx];
+  if (!pool || !pool.length) return null;
+  return pool[alertId % pool.length];
+}
+
+/* ── INTERACTIVITY STATE ── */
+let hoveredRegion = -1;
+let regionFilter  = -1;
+let hoveredSlice  = null;
+let mitreFilter   = null;
+let incidentFilter = null;
+let sparkHoverX   = -1;
+let lmFilter      = null;
+
+function pointInRegion(px, py, r, W, H) {
+  const cx = r.cx * W, cy = r.cy * H, rx = r.rx * W, ry = r.ry * H;
+  const pts = r.pts.map(([x, y]) => [cx + x * rx, cy + y * ry]);
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const [xi, yi] = pts[i], [xj, yj] = pts[j];
+    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+function getSliceAtAngle(angle) {
+  const vis = getVisible();
+  const total = vis.length || 1;
+  const sevs = [['crit', vis.filter(a => a.sev==='crit').length], ['high', vis.filter(a => a.sev==='high').length], ['med', vis.filter(a => a.sev==='med').length]];
+  let start = 0;
+  for (const [sev, count] of sevs) {
+    const sweep = (count / total) * Math.PI * 2;
+    if (angle >= start && angle < start + sweep) return sev;
+    start += sweep;
+  }
+  return null;
+}
+function setRegionFilter(idx) {
+  regionFilter = (regionFilter === idx) ? -1 : idx;
+  selectedIdx = -1; renderAlerts();
+}
+function setMitreFilter(tactic) {
+  mitreFilter = (mitreFilter === tactic) ? null : tactic;
+  selectedIdx = -1; renderAlerts(); updateMitreBars();
+}
+function filterByIncident(id) {
+  incidentFilter = (incidentFilter === id) ? null : id;
+  selectedIdx = -1; renderAlerts();
+}
+function searchForIOC(value) {
+  const q = value.endsWith('...') ? value.slice(0, -3) : value;
+  $('searchInput').value = q;
+  searchQuery = q.toLowerCase();
+  selectedIdx = -1; renderAlerts();
+  $('alertList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function setFilterFromCard(sev) {
+  activeFilter = (activeFilter === sev) ? 'all' : sev;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === activeFilter));
+  selectedIdx = -1; renderAlerts();
+  $('alertList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function clearAllFilters() {
+  activeFilter = 'all'; searchQuery = ''; regionFilter = -1; mitreFilter = null; incidentFilter = null; lmFilter = null;
+  $('searchInput').value = '';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === 'all'));
+  selectedIdx = -1; renderAlerts(); updateMitreBars();
+}
+
+/* ── SOC FUNCTIONS ── */
+function assignAnalyst() {
+  const a = ANALYSTS.reduce((min, x) => x.cases < min.cases ? x : min, ANALYSTS[0]);
+  a.cases++; renderAnalysts(); return a.id;
+}
+function renderAnalysts() {
+  const el = document.getElementById('analystLoad'); if (!el) return;
+  el.innerHTML = ANALYSTS.map(a => {
+    const w = Math.min(100, a.cases * 20);
+    return '<div class="analyst-row"><span class="analyst-id">' + a.id + '</span><div class="analyst-bar-track"><div class="analyst-bar-fill" style="width:' + w + '%"></div></div><span class="analyst-count">' + a.cases + '</span></div>';
+  }).join('');
+}
+function calcMTTD() {
+  const acked = ALERTS.filter(a => alertState[a.id] && alertState[a.id].ackedAt);
+  if (!acked.length) return '\u2014';
+  const avg = acked.reduce((s,a) => s + (alertState[a.id].ackedAt - alertState[a.id].arrivedAt), 0) / acked.length;
+  return avg < 60000 ? Math.round(avg/1000)+'s' : Math.round(avg/60000)+'m';
+}
+function calcMTTR() {
+  const res = ALERTS.filter(a => alertState[a.id] && alertState[a.id].dismissedAt);
+  if (!res.length) return '\u2014';
+  const avg = res.reduce((s,a) => s + (alertState[a.id].dismissedAt - alertState[a.id].arrivedAt), 0) / res.length;
+  return avg < 60000 ? Math.round(avg/1000)+'s' : Math.round(avg/60000)+'m';
+}
+function updateFPRate() {
+  const total = ALERTS.filter(a => alertState[a.id] && alertState[a.id].dismissed).length;
+  const rate = total > 0 ? Math.round(fpCount / total * 100) : 0;
+  const el = document.getElementById('fpRateVal'); if (el) el.textContent = rate + '%';
+}
+function updateSOCMetrics() {
+  const mttd = document.getElementById('mttdVal'); if (mttd) mttd.textContent = calcMTTD();
+  const mttr = document.getElementById('mttrVal'); if (mttr) mttr.textContent = calcMTTR();
+  updateFPRate();
+  updateExecBar();
+}
+function correlateIncident(alert) {
+  const now = Date.now();
+  const match = INCIDENTS.find(inc =>
+    !inc.closed && inc.region === alert.region &&
+    inc.alertIds.some(aid => { const o = ALERTS.find(x => x.id === aid); return o && o.mitre.some(t => alert.mitre.includes(t)); }) &&
+    (now - inc.createdAt) < 10 * 60 * 1000
+  );
+  if (match) { if (!match.alertIds.includes(alert.id)) match.alertIds.push(alert.id); return match.id; }
+  const id = 'INC-' + String(incidentCounter++).padStart(3, '0');
+  INCIDENTS.push({ id, alertIds: [alert.id], region: alert.region, phase: (KC_MAP_GLOBAL[alert.mitre[0]] || ['Unknown'])[0], createdAt: now, closed: false });
+  return id;
+}
+function updateIncidentCount() {
+  const open = INCIDENTS.filter(i => !i.closed).length;
+  const el = document.getElementById('statIncidents');
+  if (el) animateCounter(el, +el.textContent || 0, open, 0);
+}
+function addIOC(alert) {
+  IOC_LIST.unshift({ type:'ip', value:alert.src, feed:IOC_FEEDS[alert.id % IOC_FEEDS.length], alertId:alert.id, seenAt:Date.now() });
+  const hash = Array.from({length:8}, () => Math.floor(Math.random()*256).toString(16).padStart(2,'0')).join('') + '...';
+  IOC_LIST.unshift({ type:'hash', value:hash, feed:IOC_FEEDS[(alert.id+2) % IOC_FEEDS.length], alertId:alert.id, seenAt:Date.now() });
+  if (IOC_LIST.length > 12) IOC_LIST.length = 12;
+  renderIOCs();
+}
+function renderIOCs() {
+  const el = document.getElementById('iocList'); if (!el) return;
+  el.innerHTML = IOC_LIST.slice(0,8).map(ioc => {
+    const age = relTime(Date.now() - ioc.seenAt);
+    const c = ioc.type === 'ip' ? 'var(--danger)' : ioc.type === 'hash' ? 'var(--warn)' : 'var(--info)';
+    const safeVal = ioc.value.replace(/'/g, '');
+    return '<div class="ioc-row" onclick="searchForIOC(\'' + safeVal + '\')" title="Search alerts for this IOC"><span class="ioc-type" style="color:' + c + '">' + ioc.type.toUpperCase() + '</span><span class="ioc-value">' + ioc.value + '</span><span class="ioc-feed">' + ioc.feed + '</span><span class="ioc-age">' + age + '</span></div>';
+  }).join('');
+}
+function respondAlert(id, action) {
+  if (!alertResponse[id]) alertResponse[id] = {};
+  alertResponse[id][action] = true;
+  const a = ALERTS.find(x => x.id === id); if (!a) return;
+  const msgs = {
+    block:    'Blocked IP ' + a.src + ' on perimeter firewall',
+    isolate:  'Host ' + a.dst + ' isolated from network segment',
+    ticket:   'Incident ticket created \u2014 assigned to ' + assignAnalyst(),
+    suppress: 'Alert rule ' + a.rule + ' suppressed \u2014 marked as false positive',
+  };
+  pushLog('OK', '<span style="color:var(--accent)">[RESPONSE]</span> ' + msgs[action]);
+  showToast(Object.assign({}, a, { name: msgs[action], sev: action === 'suppress' ? 'med' : 'high' }));
+  if (action === 'suppress') {
+    fpCount++;
+    if (alertState[id]) { alertState[id].dismissed = true; alertState[id].dismissedAt = Date.now(); }
+    updateFPRate(); updateSOCMetrics(); renderAlerts(); updateCritCount();
+  } else {
+    renderAlerts();
+  }
+}
+function updateSLATimers() {
+  const now = Date.now();
+  document.querySelectorAll('.sla-timer').forEach(el => {
+    const id = +el.dataset.id;
+    const a = ALERTS.find(x => x.id === id); if (!a) return;
+    const st = alertState[id]; if (!st || st.dismissed) { el.textContent = ''; return; }
+    const sla = SLA_MS[a.sev]; const rem = sla - (now - st.arrivedAt);
+    if (rem <= 0) { el.textContent = 'BREACH'; el.className = 'sla-timer sla-breach'; return; }
+    const pct = rem / sla;
+    el.className = 'sla-timer ' + (pct < 0.2 ? 'sla-red' : pct < 0.5 ? 'sla-amber' : 'sla-ok');
+    const mins = Math.floor(rem / 60000);
+    el.textContent = 'SLA ' + (mins > 0 ? mins + 'm' : Math.floor((rem % 60000)/1000) + 's');
+  });
+}
+setInterval(updateSLATimers, 10000);
+setInterval(updateSOCMetrics, 15000);
+function generateHandoff() {
+  const el = document.getElementById('handoffBody'); if (!el) return;
+  const crits = ALERTS.filter(a => a.sev === 'crit' && !alertState[a.id]?.dismissed).length;
+  const openInc = INCIDENTS.filter(i => !i.closed).length;
+  const tc = getThreatcon(crits);
+  const breached = ALERTS.filter(a => {
+    const st = alertState[a.id]; if (!st || st.dismissed) return false;
+    return (Date.now() - st.arrivedAt) > SLA_MS[a.sev];
+  }).length;
+  const acked = ALERTS.filter(a => alertState[a.id]?.acked).length;
+  const fpEl = document.getElementById('fpRateVal');
+  el.innerHTML = '<div class="handoff-text">'
+    + '<span style="color:' + tc.color + '">' + tc.label + ' \u00b7 ' + tc.sub + '</span> &nbsp;|&nbsp; '
+    + crits + ' critical alert' + (crits !== 1 ? 's' : '') + ' active &nbsp;|&nbsp; '
+    + openInc + ' open incident' + (openInc !== 1 ? 's' : '') + ' &nbsp;|&nbsp; '
+    + (breached > 0 ? '<span style="color:var(--danger)">' + breached + ' SLA breach' + (breached !== 1 ? 'es' : '') + '</span>' : '<span style="color:var(--accent)">No SLA breaches</span>')
+    + ' &nbsp;|&nbsp; ' + acked + ' acked &nbsp;|&nbsp; FP rate: ' + (fpEl ? fpEl.textContent : '0%')
+    + '</div>';
+}
+function toggleHandoff() {
+  showHandoff = !showHandoff;
+  const body = document.getElementById('handoffBody');
+  if (body) body.style.display = showHandoff ? 'block' : 'none';
+  if (showHandoff) generateHandoff();
+}
+setInterval(() => { if (showHandoff) generateHandoff(); }, 30000);
+function getVelocityLabel() {
+  const tail = sparkData.slice(-6).filter(x => x > 0);
+  if (tail.length < 3) return null;
+  const rising  = tail.slice(-3).every((v,i,a) => i === 0 || v >= a[i-1]);
+  const falling = tail.slice(-3).every((v,i,a) => i === 0 || v <= a[i-1]);
+  if (rising  && tail[tail.length-1] > tail[0] * 1.3) return { label:'\u2191 SURGE',  color:'#f04545' };
+  if (falling && tail[0] > tail[tail.length-1] * 1.2) return { label:'\u2193 EASING', color:'#00e5a0' };
+  return null;
+}
+
+/* ── RENDER ── */
+let activeFilter = 'all', searchQuery = '', selectedIdx = -1, openAlertId = null;
+
+function getVisible() {
+  return ALERTS.filter(a => {
+    if (alertState[a.id].dismissed) return false;
+    if (activeFilter !== 'all' && a.sev !== activeFilter) return false;
+    if (searchQuery && !a.name.toLowerCase().includes(searchQuery) && !a.src.toLowerCase().includes(searchQuery)) return false;
+    if (regionFilter >= 0 && a.region !== regionFilter) return false;
+    if (mitreFilter && !a.mitre.includes(mitreFilter)) return false;
+    if (incidentFilter) { const inc = INCIDENTS.find(i => i.id === incidentFilter); if (!inc || !inc.alertIds.includes(a.id)) return false; }
+    if (lmFilter && a.src.split(':')[0] !== lmFilter && a.dst !== lmFilter) return false;
+    return true;
+  });
+}
+
+function updateFilterCounts() {
+  const all  = ALERTS.filter(a => !alertState[a.id].dismissed);
+  const crit = all.filter(a => a.sev === 'crit').length;
+  const high = all.filter(a => a.sev === 'high').length;
+  const med  = all.filter(a => a.sev === 'med').length;
+  document.querySelector('[data-filter="all"]').textContent  = 'All ('  + all.length + ')';
+  document.querySelector('[data-filter="crit"]').textContent = 'Crit (' + crit + ')';
+  document.querySelector('[data-filter="high"]').textContent = 'High (' + high + ')';
+  document.querySelector('[data-filter="med"]').textContent  = 'Med ('  + med  + ')';
+}
+
+function renderAlerts() {
+  updateFilterCounts();
+  const list = $('alertList');
+  list.innerHTML = '';
+  const hasFilter = activeFilter !== 'all' || searchQuery || regionFilter >= 0 || mitreFilter || incidentFilter;
+  if (hasFilter) {
+    const bar = document.createElement('div');
+    bar.className = 'filter-clear-bar';
+    let desc = [];
+    if (activeFilter !== 'all') desc.push(activeFilter.toUpperCase());
+    if (regionFilter >= 0) desc.push(REGIONS[regionFilter].name);
+    if (mitreFilter) desc.push(mitreFilter);
+    if (incidentFilter) desc.push(incidentFilter);
+    if (searchQuery) desc.push('"' + searchQuery + '"');
+    bar.innerHTML = 'FILTERED: ' + desc.join(' + ') + ' <button onclick="clearAllFilters()">Clear All \u00d7</button>';
+    list.appendChild(bar);
+  }
+  const visible = getVisible();
+  if (!visible.length) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'padding:18px;text-align:center;font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);';
+    empty.textContent = 'No alerts match current filter';
+    list.appendChild(empty);
+    drawDonut(); return;
+  }
+  const KC_PHASE_COLOR = {'Recon':'#7c6fff','Initial Access':'#f04545','Execution':'#fb923c','Persistence':'#f5a623','Lateral Move':'#e879f9','C&C':'#38b6ff','Exfil':'#ff6b6b'};
+  visible.forEach((a, i) => {
+    const acked = alertState[a.id].acked;
+    const phase = (KC_MAP_GLOBAL[a.mitre[0]] || [a.mitre[0] || 'Unknown'])[0];
+    const phaseColor = KC_PHASE_COLOR[phase] || '#4d7a9a';
+    const inc = INCIDENTS.find(inc => inc.alertIds.includes(a.id));
+    const ar = alertResponse[a.id] || {};
+    const div = document.createElement('div');
+    const isSelected = selectedAlerts.has(a.id);
+    div.className = 'alert-item ' + a.sev + (acked ? ' acknowledged' : '') + (i === selectedIdx ? ' selected' : '') + (isSelected ? ' bulk-selected' : '');
+    div.style.animationDelay = (i * 0.04) + 's';
+    const hasNote = alertState[a.id].notes && alertState[a.id].notes.trim().length > 0;
+    div.innerHTML =
+      '<input type="checkbox" class="alert-checkbox" ' + (isSelected ? 'checked' : '') + ' onclick="toggleBulkSelect(' + a.id + ',event)" title="Select for bulk action">' +
+      '<span class="sev-badge badge-' + a.sev + '">' + a.sev.toUpperCase() + '</span>' +
+      '<div class="alert-info">' +
+        '<div class="alert-name">' + a.name +
+          (acked ? ' <span class="acknowledged-tag">\u2713 ACK</span>' : '') +
+          (alertState[a.id].isNew ? ' <span class="new-badge">NEW</span>' : '') +
+          (hasNote ? ' <span class="notes-icon" title="Has analyst notes">\u270f</span>' : '') +
+          ' <span class="sla-timer" data-id="' + a.id + '"></span>' +
+          (inc ? ' <span class="inc-badge" onclick="event.stopPropagation();openIncModal(\'' + inc.id + '\')" title="Open incident details">' + inc.id + '</span>' : '') +
+        '</div>' +
+        '<div class="kc-phase-row" style="color:' + phaseColor + '">\u25b6 ' + phase + '</div>' +
+        '<div class="alert-meta"><span class="alert-src">SRC: ' + a.src + '</span><span class="mitre-tag">' + a.mitre[0] + '</span>' +
+          (a.region !== undefined ? '<span class="region-tag" style="color:' + REGION_INTEL[a.region].color + '" onclick="event.stopPropagation();setRegionFilter(' + a.region + ')" title="Filter by region">' + REGION_INTEL[a.region].name + ' \u00b7 ' + REGION_INTEL[a.region].actor + '</span>' : '') +
+          (a.region !== undefined && getBotForAlert(a.id, a.region) ? '<span class="bot-id-tag" style="color:' + REGION_INTEL[a.region].color + '">' + getBotForAlert(a.id, a.region).id + '</span>' : '') +
+        '</div>' +
+        '<div class="alert-response">' +
+          '<button class="resp-block' + (ar.block ? ' done' : '') + '" title="Block source IP">\u2296 Block</button>' +
+          '<button class="resp-isolate' + (ar.isolate ? ' done' : '') + '" title="Isolate host">\u26d4 Isolate</button>' +
+          '<button class="resp-ticket' + (ar.ticket ? ' done' : '') + '" title="Create ticket">\u25a0 Ticket</button>' +
+          '<button class="resp-suppress' + (ar.suppress ? ' done' : '') + '" title="Suppress / FP">\u2296 Suppress</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="alert-time">' + relTime(alertState[a.id].arrivedAt) + '</div>' +
+      triageHTML(a) +
+      '<div class="alert-actions">' +
+        '<button class="ack-btn' + (acked ? ' acknowledged' : '') + '" data-id="' + a.id + '">' + (acked ? '\u2713' : 'ACK') + '</button>' +
+        '<button class="dismiss-btn" data-id="' + a.id + '">\u00d7</button>' +
+      '</div>';
+    div.addEventListener('click', e => {
+      if (e.target.closest('.ack-btn') || e.target.closest('.dismiss-btn') || e.target.closest('.alert-response')) return;
+      openDetail(a.id);
+    });
+    div.querySelector('.ack-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      alertState[a.id].acked = !alertState[a.id].acked;
+      if (alertState[a.id].acked && !alertState[a.id].ackedAt) alertState[a.id].ackedAt = Date.now();
+      renderAlerts(); updateSOCMetrics();
+    });
+    div.querySelector('.dismiss-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      div.classList.add('dismissing');
+      setTimeout(() => { alertState[a.id].dismissed = true; alertState[a.id].dismissedAt = Date.now(); renderAlerts(); updateCritCount(); updateSOCMetrics(); }, 350);
+    });
+    div.querySelector('.resp-block').addEventListener('click', e => { e.stopPropagation(); respondAlert(a.id, 'block'); });
+    div.querySelector('.resp-isolate').addEventListener('click', e => { e.stopPropagation(); respondAlert(a.id, 'isolate'); });
+    div.querySelector('.resp-ticket').addEventListener('click', e => { e.stopPropagation(); respondAlert(a.id, 'ticket'); });
+    div.querySelector('.resp-suppress').addEventListener('click', e => { e.stopPropagation(); respondAlert(a.id, 'suppress'); });
+    list.appendChild(div);
+  });
+  updateSLATimers();
+  drawDonut();
+  renderCoverageGrid();
+  startLM();
+}
+
+function getThreatcon(n) {
+  if (n === 0) return { label:'THREATCON 5', sub:'Routine',  color:'#00e5a0', pulse:false };
+  if (n <= 2)  return { label:'THREATCON 4', sub:'Low',      color:'#38b6ff', pulse:false };
+  if (n <= 5)  return { label:'THREATCON 3', sub:'Elevated', color:'#f5a623', pulse:false };
+  if (n <= 9)  return { label:'THREATCON 2', sub:'High',     color:'#fb923c', pulse:true  };
+  return             { label:'THREATCON 1', sub:'Critical', color:'#f04545', pulse:true  };
+}
+function updateThreatcon(n) {
+  const tc = getThreatcon(n);
+  $('threatconLabel').textContent = tc.label;
+  $('threatconSub').textContent   = tc.sub;
+  $('threatconDot').style.background = tc.color;
+  $('threatconDot').style.boxShadow  = '0 0 6px ' + tc.color;
+  $('threatconBadge').style.borderColor = tc.color + '55';
+  $('threatconBadge').style.color = tc.color;
+  $('threatconBadge').classList.toggle('pulsing', tc.pulse);
+  $('topbarAccent').style.background = 'linear-gradient(90deg,' + tc.color + '88 0%,' + tc.color + '22 60%,transparent 100%)';
+}
+function updateThreatScore() {
+  const alive = ALERTS.filter(a => !alertState[a.id].dismissed);
+  const score = Math.min(100,
+    alive.filter(a => a.sev === 'crit').length * 15 +
+    alive.filter(a => a.sev === 'high').length * 5  +
+    alive.filter(a => a.sev === 'med').length  * 1);
+  const color = score < 20 ? '#00e5a0' : score < 50 ? '#38b6ff' : score < 75 ? '#f5a623' : '#f04545';
+  $('threatRing').style.background = 'conic-gradient(' + color + ' ' + score + '%, var(--surface2) 0)';
+  $('threatScore').textContent = score;
+  $('threatScore').style.color = color;
+}
+function updateCritCount() {
+  const n = ALERTS.filter(a => a.sev === 'crit' && !alertState[a.id].dismissed).length;
+  $('critCount').textContent = n;
+  updateThreatcon(n);
+  updateThreatScore();
+}
+
+/* ── DETAIL ── */
+const SEV_COLORS = { crit: 'var(--danger)', high: 'var(--warn)', med: 'var(--info)' };
+let currentAlert = null;
+function openDetail(id) {
+  const a = ALERTS.find(x => x.id === id); if (!a) return;
+  openAlertId = id;
+  currentAlert = a;
+  $('dSev').textContent = a.sev.toUpperCase();
+  $('dSev').style.color = SEV_COLORS[a.sev];
+  $('dTitle').textContent = a.name;
+  $('dSrc').textContent = a.src;
+  $('dDst').textContent = a.dst;
+  $('dTime').textContent = relTime(alertState[a.id].arrivedAt);
+  $('dRule').textContent = a.rule;
+  $('dMitre').innerHTML = a.mitre.map(t => '<span class="mitre-tag-lg">' + t + '</span>').join('');
+  const KC_STAGES = ['Recon','Initial Access','Execution','Persistence','Lateral Move','C&C','Exfil'];
+  const KC_MAP = {'Reconnaissance':['Recon'],'Initial Access':['Initial Access'],'Execution':['Execution'],'Persistence':['Persistence'],'Privilege Escalation':['Execution'],'Defense Evasion':['Execution'],'Credential Access':['Initial Access'],'Discovery':['Recon'],'Lateral Movement':['Lateral Move'],'Collection':['Exfil'],'Command & Control':['C&C'],'Exfiltration':['Exfil'],'Impact':['Exfil']};
+  const activeStages = new Set(a.mitre.flatMap(t => KC_MAP[t] || []));
+  $('dKillChain').innerHTML = KC_STAGES.map((s, i) => '<span class="kc-stage' + (activeStages.has(s) ? ' kc-active' : '') + '">' + s + (i < KC_STAGES.length - 1 ? '<span class="kc-arrow">\u203a</span>' : '') + '</span>').join('');
+  if (a.region !== undefined) {
+    const ri = REGION_INTEL[a.region];
+    $('dOriginDot').style.background = ri.color;
+    $('dOriginDot').style.boxShadow = '0 0 6px ' + ri.color;
+    $('dOriginRegion').textContent = ri.name;
+    $('dOriginRegion').style.color = ri.color;
+    $('dOriginActor').textContent = '\u00b7 ' + ri.desc;
+    $('dOrigin').style.borderColor = ri.color + '44';
+    $('dOrigin').style.display = 'flex';
+  } else {
+    $('dOrigin').style.display = 'none';
+  }
+  const bot = (a.region !== undefined) ? getBotForAlert(a.id, a.region) : null;
+  if (bot) {
+    const ri = REGION_INTEL[a.region];
+    $('dBotId').textContent = bot.id;
+    $('dBotId').style.color = ri.color;
+    $('dBotId').style.borderColor = ri.color;
+    $('dBotName').textContent = bot.name;
+    $('dBotType').textContent = bot.type;
+    $('dBotOp').textContent = bot.operator;
+    $('dBotFirst').textContent = bot.firstSeen;
+    $('dBotCount').textContent = bot.attackCount + ' recorded';
+    $('dBotSig').textContent = bot.signature;
+    $('dBot').style.display = 'block';
+  } else {
+    $('dBot').style.display = 'none';
+  }
+  $('dRec').innerHTML = '<strong style="color:var(--info);font-size:var(--fs-xs);letter-spacing:1px;text-transform:uppercase;">Recommended Action</strong><br><br>' + a.rec;
+  const intel = ATTACK_INTEL[a.rule];
+  if (intel) {
+    $('dIntelType').textContent = intel.type;
+    $('dIntelGoal').textContent = '\u00b7 ' + intel.goal;
+    $('dIntelHow').textContent = intel.how;
+    $('dIntelDefend').textContent = intel.defend;
+    $('dIntel').style.display = 'block';
+  } else {
+    $('dIntel').style.display = 'none';
+  }
+  // load analyst notes
+  if ($('dNotes')) $('dNotes').value = alertState[id].notes || '';
+  // ACTOR button visibility
+  if ($('dActorBtn')) $('dActorBtn').style.display = (a.region !== undefined) ? '' : 'none';
+  // triage breakdown
+  const pct = calcTriage(a);
+  const triageCls = pct<45?'triage-fp':pct<70?'triage-amb':'triage-tp';
+  const h = new Date().getHours();
+  const timeBonus = (h>=22||h<=6) ? '+10 (night hours)' : '+0';
+  const srcCount = ALERTS.filter(x=>x.src===a.src&&x.id!==a.id).length;
+  const srcBonus = srcCount>=2 ? '+12 (repeat src ×'+srcCount+')' : '+0';
+  const sevBonus = a.sev==='crit' ? '+8 (critical sev)' : '+0';
+  const triageSection = $('triageDetailSection');
+  if (triageSection) triageSection.innerHTML = '<div class="triage-detail"><div class="triage-detail-title">AI TRIAGE BREAKDOWN</div>' +
+    '<div class="triage-row"><span>Rule base confidence</span><span>' + (RULE_BASE[a.rule]||60) + '%</span></div>' +
+    '<div class="triage-row"><span>Time of day</span><span>' + timeBonus + '%</span></div>' +
+    '<div class="triage-row"><span>Repeat source</span><span>' + srcBonus + '%</span></div>' +
+    '<div class="triage-row"><span>Severity modifier</span><span>' + sevBonus + '%</span></div>' +
+    '<div class="triage-row" style="border-top:1px solid rgba(56,182,255,0.07);padding-top:4px;margin-top:2px;"><span>TRIAGE SCORE</span><span class="triage-pct" style="font-size:var(--fs-sm)">' + pct + '% &mdash; <span class="triage-fill" style="display:inline;background:none;color:' + (triageCls==='triage-fp'?'var(--accent)':triageCls==='triage-amb'?'var(--warn)':'var(--danger)') + '">' + (pct<45?'LIKELY FP':pct<70?'AMBIGUOUS':'LIKELY TP') + '</span></span></div>' +
+    '</div>';
+  // packet evidence
+  renderPCAP(a);
+  $('detailOverlay').classList.add('open');
+}
+function closeDetail() { $('detailOverlay').classList.remove('open'); openAlertId = null; }
+$('detailClose').addEventListener('click', closeDetail);
+$('detailOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeDetail(); });
+$('dAck').addEventListener('click', () => { if (openAlertId) { alertState[openAlertId].acked = true; renderAlerts(); closeDetail(); } });
+$('dDismiss').addEventListener('click', () => { if (openAlertId) { alertState[openAlertId].dismissed = true; renderAlerts(); updateCritCount(); closeDetail(); } });
+
+/* ── FILTERS ── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter; selectedIdx = -1; renderAlerts();
+  });
+});
+
+/* ── SEARCH ── */
+$('searchInput').addEventListener('input', e => { searchQuery = e.target.value.toLowerCase().trim(); selectedIdx = -1; renderAlerts(); });
+
+/* ── CLEAR ACKED ── */
+$('clearAcked').addEventListener('click', () => { ALERTS.forEach(a => { if (alertState[a.id].acked) alertState[a.id].dismissed = true; }); renderAlerts(); updateCritCount(); });
+
+/* ── KEYBOARD NAV ── */
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    if (e.key === 'Escape') e.target.blur();
+    return;
+  }
+  const vis = getVisible();
+  switch (e.key) {
+    case '?': $('kbdOverlay').classList.toggle('open'); break;
+    case 'Escape':
+      if ($('kbdOverlay').classList.contains('open')) { $('kbdOverlay').classList.remove('open'); break; }
+      if ($('detailOverlay').classList.contains('open')) { closeDetail(); break; }
+      if ($('heatmapOverlay').style.display !== 'none') { closeHeatmap(); break; }
+      if ($('incOverlay').style.display !== 'none') { closeIncModal(); break; }
+      if (selectedAlerts.size > 0) { clearBulkSelection(); break; }
+      selectedIdx = -1; renderAlerts(); break;
+    case '/': e.preventDefault(); $('searchInput').focus(); break;
+    case 'm': case 'M': $('muteBtn').click(); break;
+    case 'j': case 'ArrowDown':
+      if (!vis.length) break;
+      selectedIdx = Math.min(selectedIdx + 1, vis.length - 1); renderAlerts();
+      { const items = $('alertList').querySelectorAll('.alert-item'); if (items[selectedIdx]) items[selectedIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+      break;
+    case 'k': case 'ArrowUp':
+      if (!vis.length) break;
+      selectedIdx = Math.max(selectedIdx - 1, 0); renderAlerts();
+      { const items = $('alertList').querySelectorAll('.alert-item'); if (items[selectedIdx]) items[selectedIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+      break;
+    case 'Enter': if (selectedIdx >= 0 && vis[selectedIdx]) openDetail(vis[selectedIdx].id); break;
+    case 'a': case 'A': if (selectedIdx >= 0 && vis[selectedIdx]) { alertState[vis[selectedIdx].id].acked = !alertState[vis[selectedIdx].id].acked; renderAlerts(); } break;
+    case 'd': case 'D':
+      if (selectedIdx >= 0 && vis[selectedIdx]) {
+        alertState[vis[selectedIdx].id].dismissed = true;
+        selectedIdx = Math.max(0, selectedIdx - 1);
+        renderAlerts(); updateCritCount();
+      } break;
+  }
+});
+
+/* ── TOAST ── */
+function showToast(a) {
+  const el = document.createElement('div');
+  el.className = 'toast t-' + a.sev;
+  el.innerHTML =
+    '<div class="toast-body">' +
+      '<div class="toast-label">New ' + a.sev + ' alert' + (a.region !== undefined && getBotForAlert(a.id, a.region) ? ' \u00b7 ' + getBotForAlert(a.id, a.region).id : '') + '</div>' +
+      '<div class="toast-msg">' + a.name + '</div>' +
+      '<div class="toast-src">SRC: ' + a.src + '</div>' +
+      '<div class="toast-progress"></div>' +
+    '</div>' +
+    '<button class="toast-close">\u00d7</button>';
+  el.querySelector('.toast-close').addEventListener('click', () => { el.classList.add('leaving'); setTimeout(() => el.remove(), 320); });
+  $('toastContainer').appendChild(el);
+  if (a.sev === 'crit') playBeep(900, 0.18);
+  else if (a.sev === 'high') playBeep(660, 0.12);
+  setTimeout(() => { el.classList.add('leaving'); setTimeout(() => el.remove(), 320); }, 4500);
+}
+
+/* ── SIMULATION ── */
+let simIdx = 0;
+function simulateNewAlert() {
+  const tmpl = TEMPLATES[simIdx % TEMPLATES.length]; simIdx++;
+  const id = ++nextId;
+  const alert = Object.assign({}, tmpl, { id });
+  ALERTS.push(alert);
+  alertState[id] = { acked: false, dismissed: false, arrivedAt: Date.now(), isNew: true, ackedAt: null, dismissedAt: null };
+  correlateIncident(alert); updateIncidentCount();
+  addIOC(alert);
+  tlPush(id, tmpl.sev); if (tlVisible) drawTimeline();
+  setTimeout(() => { if (alertState[id]) { alertState[id].isNew = false; renderAlerts(); } }, 4000);
+  renderAlerts(); updateCritCount();
+  if (tmpl.sev === 'crit' || tmpl.sev === 'high') showToast(alert);
+  triggerSOAR(alert);
+  addMapAttack(tmpl.region, tmpl.sev, id);
+  { const n = new Date(), t = p2(n.getUTCHours()) + ':' + p2(n.getUTCMinutes()) + ':' + p2(n.getUTCSeconds()); pushLog('ALERT', '<span class="log-t">' + t + '</span><span class="l-err">[ALERT]</span> ' + alert.rule + ' \u2014 ' + alert.name.split('\u2014')[0].trim()); }
+  const el = $('statThreats');
+  const cur = parseInt(el.textContent) || 0;
+  animateCounter(el, cur, cur + 1, 3);
+  const card = el.closest('.stat-card');
+  card.classList.add('card-flash');
+  setTimeout(() => card.classList.remove('card-flash'), 500);
+}
+function scheduleNextAlert() { setTimeout(() => { simulateNewAlert(); scheduleNextAlert(); }, 18000 + Math.random() * 10000); }
+scheduleNextAlert();
+
+/* ── LIVE PACKETS/SEC ── */
+let ppsBase = 2400;
+setInterval(() => {
+  ppsBase = Math.max(1200, Math.min(3800, ppsBase + Math.floor(Math.random() * 300 - 150)));
+  const pps = ppsBase >= 1000 ? (ppsBase / 1000).toFixed(1) + 'M' : ppsBase + 'K';
+  const el = document.querySelector('.stat-card.cyan .stat-value');
+  if (el) {
+    el.textContent = pps;
+    const card = el.closest('.stat-card');
+    card.classList.add('card-flash');
+    setTimeout(() => card.classList.remove('card-flash'), 500);
+  }
+}, 3000);
+
+/* ── SESSION TIMER ── */
+const sessionStart = Date.now();
+window._sessionStart = sessionStart;
+setInterval(() => {
+  const s = Math.floor((Date.now() - sessionStart) / 1000);
+  $('sessionTimer').textContent = p2(Math.floor(s / 3600)) + ':' + p2(Math.floor(s / 60) % 60) + ':' + p2(s % 60);
+}, 1000);
+
+function animateCounter(el, from, to, digits) {
+  let f = 0; const steps = 12;
+  const iv = setInterval(() => {
+    el.textContent = String(Math.round(from + (to - from) * (f / steps))).padStart(digits, '0');
+    if (++f > steps) { el.textContent = String(to).padStart(digits, '0'); clearInterval(iv); }
+  }, 40);
+}
+
+/* ── CLOCK ── */
+function updateClock() { const n = new Date(); $('clock').textContent = p2(n.getUTCHours()) + ':' + p2(n.getUTCMinutes()) + ':' + p2(n.getUTCSeconds()) + ' UTC'; }
+setInterval(updateClock, 1000); updateClock();
+setInterval(renderAlerts, 30000);
+
+/* ── LOG FEED ── */
+const LOG_ENTRIES = [['OK','Firewall ruleset synced'],['WARN','Elevated login failures \u2014 finance'],['ALERT','Outbound C2 beacon blocked'],['OK','Threat intel feed refreshed'],['WARN','Certificate expiry in 3 days'],['ALERT','XSS payload detected \u2014 /search'],['OK','VPN tunnel re-established NYC'],['WARN','Memory spike \u2014 web-srv-01']];
+let logIdx = 0, logCount = 0;
+const allLogs = [];
+const logTypeCounts = { OK: 0, WARN: 0, ALERT: 0 };
+let logFilter = 'all';
+const sparkData = Array(24).fill(0).map(() => Math.floor(Math.random() * 40 + 10));
+function renderLogFeed() {
+  const feed = $('logFeed');
+  const filtered = logFilter === 'all' ? allLogs : allLogs.filter(e => e.type === logFilter);
+  feed.innerHTML = '';
+  filtered.forEach(e => {
+    const d = document.createElement('div');
+    d.className = 'log-line';
+    d.innerHTML = e.html;
+    feed.appendChild(d);
+  });
+}
+function pushLog(type, html) {
+  allLogs.unshift({ type, html });
+  if (allLogs.length > 40) allLogs.pop();
+  logTypeCounts[type] = (logTypeCounts[type] || 0) + 1;
+  $('lcAlert').textContent = logTypeCounts.ALERT + ' ALERT';
+  $('lcWarn').textContent  = logTypeCounts.WARN  + ' WARN';
+  $('lcOk').textContent    = logTypeCounts.OK    + ' OK';
+  $('logCount').textContent = (++logCount) + ' events';
+  sparkData.push(sparkData[sparkData.length - 1] + Math.floor(Math.random() * 14 - 4));
+  sparkData.shift(); drawSpark();
+  renderLogFeed();
+  const card = $('logCard');
+  card.style.animation = 'none'; card.offsetHeight; card.style.animation = 'flashBorder 0.6s ease';
+}
+const logBuffer = [];
+function addLog() {
+  const [type, msg] = LOG_ENTRIES[logIdx++ % LOG_ENTRIES.length];
+  const n = new Date(), t = p2(n.getUTCHours()) + ':' + p2(n.getUTCMinutes()) + ':' + p2(n.getUTCSeconds());
+  const cls = type === 'ALERT' ? 'l-err' : type === 'WARN' ? 'l-warn' : 'l-ok';
+  const tag = type === 'OK' ? '[OK]   ' : '[' + type + ']';
+  pushLog(type, '<span class="log-t">' + t + '</span><span class="' + cls + '">' + tag + '</span> ' + msg);
+  logBuffer.push({ msg, sev: type, t: Date.now() });
+  if (logBuffer.length > 200) logBuffer.shift();
+}
+setInterval(addLog, 3500);
+document.querySelectorAll('.log-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.log-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    logFilter = btn.dataset.lf;
+    renderLogFeed();
+  });
+});
+
+/* ── SPARKLINE ── */
+function drawSpark() {
+  const cv = $('sparkCanvas'), W = cv.offsetWidth || 280, H = cv.offsetHeight || 38;
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, W, H);
+  const min = Math.min(...sparkData), range = Math.max(...sparkData) - min || 1;
+  const pts = sparkData.map((v, i) => [(i / (sparkData.length - 1)) * W, H - ((v - min) / range) * (H - 6) - 3]);
+  // gradient fill
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(56,182,255,0.18)'); grad.addColorStop(1, 'rgba(56,182,255,0)');
+  ctx.beginPath(); pts.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+  // line
+  ctx.strokeStyle = '#38b6ff'; ctx.lineWidth = 1.5; ctx.beginPath();
+  pts.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)); ctx.stroke();
+  // glowing endpoint dot
+  const [lx, ly] = pts[pts.length - 1];
+  ctx.shadowBlur = 8; ctx.shadowColor = '#38b6ff';
+  ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI * 2); ctx.fillStyle = '#38b6ff'; ctx.fill();
+  ctx.shadowBlur = 0;
+  // hover crosshair
+  if (sparkHoverX >= 0) {
+    const idx = Math.min(sparkData.length - 1, Math.round(sparkHoverX * (sparkData.length - 1)));
+    const [hx, hy] = pts[idx];
+    ctx.save();
+    ctx.globalAlpha = 0.5; ctx.strokeStyle = '#38b6ff'; ctx.lineWidth = 1;
+    ctx.setLineDash([2, 3]);
+    ctx.beginPath(); ctx.moveTo(hx, 0); ctx.lineTo(hx, H); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    ctx.beginPath(); ctx.arc(hx, hy, 3, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+    const label = sparkData[idx] + ' evt';
+    ctx.font = "bold 8px 'Share Tech Mono',monospace"; ctx.textBaseline = 'top';
+    ctx.textAlign = hx > W * 0.7 ? 'right' : 'left';
+    ctx.fillStyle = '#fff'; ctx.fillText(label, hx + (hx > W * 0.7 ? -4 : 4), 2);
+    ctx.restore();
+  }
+  // velocity indicator
+  const vel = getVelocityLabel();
+  ctx.font = "bold 8px 'Share Tech Mono',monospace"; ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+  if (vel) {
+    ctx.fillStyle = vel.color; ctx.fillText(vel.label, W - 2, 2);
+  } else {
+    ctx.fillStyle = 'rgba(56,182,255,0.5)'; ctx.fillText(logCount + ' evt', W - 2, 2);
+  }
+}
+
+/* ── RESOURCE BARS ── */
+let cpu = 38, mem = 71, net = 52, dsk = 89;
+let prevBars = { cpu: 38, mem: 71, net: 52, dsk: 89 };
+function nudge(v, lo, hi) { return Math.min(hi, Math.max(lo, v + (Math.random() * 6 - 3))); }
+function trendArrow(prev, cur, warnTh) {
+  const delta = cur - prev;
+  if (Math.abs(delta) < 1.5) return '<span class="trend-flat"> &middot;</span>';
+  if (delta > 0) return '<span class="trend-' + (cur >= warnTh ? 'bad' : 'up') + '"> &uarr;</span>';
+  return '<span class="trend-good"> &darr;</span>';
+}
+function updateBars() {
+  cpu = nudge(cpu, 10, 95); mem = nudge(mem, 60, 92); net = nudge(net, 20, 85); dsk = nudge(dsk, 85, 96);
+  function set(id, val, w, d) {
+    $(id + 'Bar').style.width = Math.round(val) + '%';
+    $(id + 'Bar').className = 'bar-fill' + (val >= d ? ' danger' : val >= w ? ' warn' : '');
+    $(id + 'Pct').innerHTML = Math.round(val) + '%' + trendArrow(prevBars[id], Math.round(val), w);
+  }
+  set('cpu', cpu, 65, 85); set('mem', mem, 65, 85); set('net', net, 65, 85); set('dsk', dsk, 65, 85);
+  prevBars = { cpu: Math.round(cpu), mem: Math.round(mem), net: Math.round(net), dsk: Math.round(dsk) };
+}
+setInterval(updateBars, 4000);
+
+/* ── SYSTEM STATUS ── */
+const SYSTEMS = [
+  { name:'Firewall',    sub:'pf-edge-01',   state:'ok'      },
+  { name:'IDS / IPS',  sub:'Snort v3.1',    state:'ok'      },
+  { name:'VPN Gateway',sub:'vpn-gw-lon-02', state:'warn'    },
+  { name:'SIEM',        sub:'Splunk Cloud',  state:'ok'      },
+  { name:'Backup Node', sub:'bkp-srv-03',    state:'offline' },
+];
+const systemSince = SYSTEMS.map(() => Date.now() - Math.floor(Math.random() * 3600000 * 24));
+function fmtUptime(ms) {
+  const s = Math.floor(ms / 1000);
+  if (s < 60)    return s + 's';
+  if (s < 3600)  return Math.floor(s / 60) + 'm';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ' + Math.floor((s % 3600) / 60) + 'm';
+  return Math.floor(s / 86400) + 'd ' + Math.floor((s % 86400) / 3600) + 'h';
+}
+function renderSystems() {
+  const list = $('systemList');
+  list.innerHTML = '';
+  SYSTEMS.forEach((sys, i) => {
+    const dotClass = sys.state === 'ok' ? 'dot-green' : sys.state === 'warn' ? 'dot-amber' : 'dot-red';
+    const lblClass = sys.state === 'ok' ? 'sl-ok' : sys.state === 'warn' ? 'sl-warn' : 'sl-offline';
+    const lblText  = sys.state === 'ok' ? 'Online' : sys.state === 'warn' ? 'Degraded' : 'Offline';
+    const prefix   = sys.state === 'ok' ? 'Up ' : sys.state === 'warn' ? 'Deg ' : 'Down ';
+    const uptimeStr = prefix + fmtUptime(Date.now() - systemSince[i]);
+    const row = document.createElement('div');
+    row.className = 'system-row'; row.id = 'sysRow' + i;
+    row.innerHTML =
+      '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<div class="dot ' + dotClass + '" style="flex-shrink:0"></div>' +
+        '<div><div class="system-name">' + sys.name + '</div>' +
+        '<div class="system-sub">' + sys.sub + ' &middot; <span class="sys-uptime">' + uptimeStr + '</span></div></div>' +
+      '</div>' +
+      '<div class="status-label ' + lblClass + '">' + lblText + '</div>';
+    list.appendChild(row);
+  });
+}
+function simulateSystems() {
+  const transitions = { ok:['ok','ok','ok','warn'], warn:['ok','warn','warn','offline'], offline:['offline','offline','warn'] };
+  const i = Math.floor(Math.random() * SYSTEMS.length);
+  const pool = transitions[SYSTEMS[i].state];
+  const next = pool[Math.floor(Math.random() * pool.length)];
+  if (next !== SYSTEMS[i].state) {
+    SYSTEMS[i].state = next; systemSince[i] = Date.now();
+    renderSystems();
+    const row = $('sysRow' + i);
+    row.style.animation = 'none'; row.offsetHeight; row.style.animation = 'flashBorder 0.6s ease';
+    const online = SYSTEMS.filter(s => s.state === 'ok').length;
+    const sysCard = document.querySelector('.stat-card:last-child .stat-value');
+    if (sysCard) sysCard.textContent = online;
+  }
+  setTimeout(simulateSystems, 30000 + Math.random() * 20000);
+}
+renderSystems();
+setInterval(renderSystems, 60000);
+setTimeout(simulateSystems, 30000 + Math.random() * 20000);
+
+/* ── CONNECTIONS ── */
+let connIn = 734, connOut = 513;
+function updateConns() {
+  connIn  = Math.max(100, Math.min(1500, connIn  + Math.floor(Math.random() * 60 - 30)));
+  connOut = Math.max(50,  Math.min(900,  connOut + Math.floor(Math.random() * 40 - 20)));
+  $('connIn').textContent    = connIn.toLocaleString();
+  $('connOut').textContent   = connOut.toLocaleString();
+  $('connTotal').textContent = (connIn + connOut).toLocaleString();
+}
+setInterval(updateConns, 3000);
+
+/* ── DONUT CHART ── */
+function drawDonut() {
+  const vis = getVisible();
+  const c = { crit: 0, high: 0, med: 0 };
+  vis.forEach(a => c[a.sev]++);
+  const total = vis.length;
+  const cv = $('donutCanvas'), ctx = cv.getContext('2d');
+  const W = 76, H = 76, R = 30, cx = 38, cy = 38;
+  ctx.clearRect(0, 0, W, H);
+  if (total === 0) {
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.strokeStyle = '#1a3048'; ctx.lineWidth = 10; ctx.stroke();
+  } else {
+    const slices = [{ sev:'crit', v: c.crit, color: '#f04545' }, { sev:'high', v: c.high, color: '#f5a623' }, { sev:'med', v: c.med, color: '#38b6ff' }];
+    let angle = -Math.PI / 2;
+    slices.forEach(s => {
+      if (!s.v) return;
+      const sweep = (s.v / total) * Math.PI * 2;
+      const isHov = hoveredSlice === s.sev;
+      const r = isHov ? R + 4 : R;
+      if (isHov) { ctx.save(); ctx.shadowColor = s.color; ctx.shadowBlur = 10; }
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, angle, angle + sweep); ctx.closePath();
+      ctx.fillStyle = isHov ? s.color : s.color + 'cc'; ctx.fill();
+      if (isHov) ctx.restore();
+      angle += sweep;
+    });
+    ctx.beginPath(); ctx.arc(cx, cy, R - 10, 0, Math.PI * 2); ctx.fillStyle = '#0d1b2a'; ctx.fill();
+  }
+  ctx.fillStyle = '#cfe3f0'; ctx.font = "bold 13px 'Share Tech Mono',monospace"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy);
+  $('dCrit').textContent = c.crit; $('dHigh').textContent = c.high; $('dMed').textContent = c.med;
+  const fmt = n => total > 0 ? ' ' + Math.round(n / total * 100) + '%' : '';
+  $('dCritPct').textContent = fmt(c.crit); $('dHighPct').textContent = fmt(c.high); $('dMedPct').textContent = fmt(c.med);
+  updateMitreBars();
+  drawRadar();
+}
+function updateMitreBars() {
+  const vis = getVisible();
+  const counts = {};
+  vis.forEach(a => a.mitre.forEach(t => { counts[t] = (counts[t] || 0) + 1; }));
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const max = top[0] ? top[0][1] : 1;
+  $('mitreBars').innerHTML = top.length ? top.map(([t, n]) =>
+    '<div class="mb-row' + (mitreFilter === t ? ' mb-active' : '') + '" onclick="setMitreFilter(\'' + t.replace(/'/g, '\\\'') + '\')" title="Filter alerts by this tactic">' +
+      '<span class="mb-label">' + t + '</span>' +
+      '<div class="mb-track"><div class="mb-fill" style="width:' + (n / max * 100).toFixed(0) + '%"></div></div>' +
+      '<span class="mb-count">' + n + '</span>' +
+    '</div>'
+  ).join('') : '<div class="mb-empty">No active alerts</div>';
+  renderCoverageGrid();
+}
+
+/* ── CVE SPOTLIGHT ── */
+const CVE_POOL = [
+  { id:'CVE-2021-44228', name:'Log4Shell \u2014 Apache Log4j RCE',          cvss:10.0, epss:0.89, tier:'critical', product:'Apache Log4j 2.x',            status:'exploited', desc:'JNDI lookup injection via crafted log messages enables unauthenticated remote code execution.'        },
+  { id:'CVE-2023-4966',  name:'Citrix Bleed \u2014 Session Token Leak',      cvss:9.4,  epss:0.72, tier:'critical', product:'Citrix NetScaler',             status:'exploited', desc:'Unauthenticated buffer overread leaks session tokens, bypassing multi-factor authentication.'        },
+  { id:'CVE-2024-3400',  name:'PAN-OS \u2014 Command Injection RCE',         cvss:10.0, epss:0.61, tier:'critical', product:'Palo Alto PAN-OS',             status:'exploited', desc:'OS command injection in GlobalProtect allows root-level RCE without authentication.'                },
+  { id:'CVE-2022-30190', name:'Follina \u2014 MSDT Remote Code Execution',   cvss:7.8,  epss:0.45, tier:'high',     product:'Microsoft Windows',           status:'patched',   desc:'Malicious Office docs invoke MSDT via ms-msdt URI, executing arbitrary PowerShell.'               },
+  { id:'CVE-2023-44487', name:'HTTP/2 Rapid Reset \u2014 DDoS',              cvss:7.5,  epss:0.34, tier:'high',     product:'HTTP/2 Web Servers',          status:'patched',   desc:'Rapid RESET_STREAM frames overwhelm servers, enabling DDoS at record ~398M rps.'                 },
+  { id:'CVE-2024-21762', name:'FortiOS \u2014 SSL-VPN Auth Bypass',          cvss:9.6,  epss:0.23, tier:'critical', product:'Fortinet FortiOS',            status:'exploited', desc:'Out-of-bounds write in SSL-VPN allows unauthenticated code execution via HTTP requests.'           },
+  { id:'CVE-2023-20198', name:'Cisco IOS XE \u2014 Web UI Privilege Esc.',   cvss:10.0, epss:0.11, tier:'critical', product:'Cisco IOS XE',                status:'exploited', desc:'Unauthenticated attackers create local admin accounts via the web management interface.'          },
+  { id:'CVE-2024-1708',  name:'ScreenConnect \u2014 Path Traversal RCE',     cvss:10.0, epss:0.08, tier:'critical', product:'ConnectWise ScreenConnect',   status:'poc',       desc:'Path traversal in setup wizard allows unauthenticated file write, leading to full system RCE.'    },
+];
+let cveIdx = 0;
+function renderCVE(idx) {
+  const c = CVE_POOL[idx];
+  const tc = c.tier === 'critical' ? 'cvss-critical' : c.tier === 'high' ? 'cvss-high' : 'cvss-medium';
+  const sc = c.status === 'exploited' ? 'cve-s-hot' : c.status === 'poc' ? 'cve-s-poc' : 'cve-s-patch';
+  const sl = c.status === 'exploited' ? 'Actively Exploited' : c.status === 'poc' ? 'PoC Public' : 'Patched';
+  const barW = (c.cvss / 10 * 100).toFixed(0);
+  const barC = c.cvss >= 9 ? 'var(--danger)' : c.cvss >= 7 ? 'var(--warn)' : 'var(--info)';
+  const epssColor = c.epss >= 0.5 ? 'var(--danger)' : c.epss >= 0.1 ? 'var(--warn)' : 'var(--accent)';
+  const epssLabel = c.epss >= 0.5 ? 'HIGH EXPLOIT RISK' : c.epss >= 0.1 ? 'MODERATE' : 'LOW';
+  $('cveSpotlight').innerHTML =
+    '<div class="cve-entry">' +
+      '<div class="cve-top-row"><div class="cve-id">' + c.id + '</div><span class="cve-status ' + sc + '">' + sl + '</span></div>' +
+      '<div class="cve-title">' + c.name + '</div>' +
+      '<div class="cve-desc">' + c.desc + '</div>' +
+      '<div class="cve-meta"><span class="cve-cvss ' + tc + '">CVSS ' + c.cvss.toFixed(1) + '</span><span class="cve-product">' + c.product + '</span></div>' +
+      '<div class="cve-score-bar"><div class="cve-score-fill" style="width:' + barW + '%;background:' + barC + '"></div></div>' +
+      '<div class="cve-epss-row"><div class="cve-meta-label">EPSS</div><div class="epss-bar-track"><div class="epss-bar-fill" style="width:' + (c.epss*100).toFixed(0) + '%;background:' + epssColor + '"></div></div><span style="color:' + epssColor + ';font:bold var(--fs-xs) var(--mono)">' + (c.epss*100).toFixed(1) + '% ' + epssLabel + '</span></div>' +
+    '</div>';
+  const dots = $('cveDots'); dots.innerHTML = '';
+  CVE_POOL.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'cve-dot' + (i === idx ? ' active' : '');
+    d.addEventListener('click', () => { cveIdx = i; renderCVE(i); });
+    dots.appendChild(d);
+  });
+}
+$('cveNext').addEventListener('click', () => { cveIdx = (cveIdx + 1) % CVE_POOL.length; renderCVE(cveIdx); });
+setInterval(() => { cveIdx = (cveIdx + 1) % CVE_POOL.length; renderCVE(cveIdx); }, 10000);
+
+/* ── POKEMON WORLD THREAT MAP ── */
+const REGIONS = [
+  { name:'GALAR',  cx:0.10, cy:0.13, rx:0.09, ry:0.12, color:'#38b6ff', pts:[[-0.4,-1],[0.3,-0.9],[0.7,-0.3],[0.6,0.4],[0.2,1],[-0.2,0.9],[-0.7,0.3],[-0.6,-0.4]] },
+  { name:'SINNOH', cx:0.33, cy:0.16, rx:0.10, ry:0.10, color:'#a78bfa', pts:[[-0.2,-1],[0.6,-0.7],[1,0.1],[0.7,0.8],[0,1],[-0.8,0.6],[-1,-0.1],[-0.5,-0.7]] },
+  { name:'KANTO',  cx:0.61, cy:0.21, rx:0.09, ry:0.09, color:'#f04545', pts:[[-0.7,-0.3],[0.1,-1],[1,-0.2],[0.8,0.6],[0.2,1],[-0.5,0.7],[-0.9,0.1]] },
+  { name:'JOHTO',  cx:0.74, cy:0.31, rx:0.10, ry:0.10, color:'#f5a623', pts:[[-0.5,-1],[0.4,-0.8],[1,-0.1],[0.9,0.6],[0.2,1],[-0.6,0.7],[-1,0],[-0.7,-0.5]] },
+  { name:'KALOS',  cx:0.14, cy:0.44, rx:0.10, ry:0.10, color:'#34d399', pts:[[-0.3,-1],[0.5,-0.8],[1,0.1],[0.8,0.8],[0.1,1],[-0.7,0.6],[-1,0],[-0.7,-0.5]] },
+  { name:'UNOVA',  cx:0.47, cy:0.52, rx:0.12, ry:0.09, color:'#60a5fa', pts:[[-1,-0.1],[-0.1,-1],[1,-0.2],[1,0.5],[0.2,1],[-0.3,1],[-1,0.4]] },
+  { name:'HOENN',  cx:0.21, cy:0.68, rx:0.11, ry:0.10, color:'#fb923c', pts:[[-0.8,-0.5],[0.1,-1],[1,-0.3],[0.9,0.4],[0.2,1],[-0.6,0.9],[-1,0.2]] },
+  { name:'PALDEA', cx:0.59, cy:0.71, rx:0.11, ry:0.10, color:'#e879f9', pts:[[-0.9,-0.4],[-0.1,-1],[0.8,-0.7],[1,0.2],[0.5,1],[-0.1,0.9],[-0.9,0.4]] },
+  { name:'ALOLA',  cx:0.38, cy:0.86, rx:0.09, ry:0.07, color:'#fbbf24', pts:[[-0.8,-0.3],[0,-1],[0.8,-0.3],[1,0.4],[0.2,1],[-0.4,0.9],[-1,0.3]] },
+];
+const HQ = { cx: 0.88, cy: 0.46 };
+const SEV_MAP = { crit: '#f04545', high: '#f5a623', med: '#38b6ff' };
+let mapAttacks = [];
+const mapParticles = Array.from({ length: 60 }, () => ({
+  x: Math.random(), y: Math.random(),
+  vx: (Math.random() - 0.5) * 0.0003, vy: (Math.random() - 0.5) * 0.0003,
+  alpha: Math.random() * 0.4 + 0.05, size: Math.random() * 1.2 + 0.3,
+  phase: Math.random() * Math.PI * 2,
+}));
+const regionHits    = new Array(REGIONS.length).fill(0);
+const regionLastHit = new Array(REGIONS.length).fill(0);
+
+function addMapAttack(regionIdx, sev, alertId) {
+  mapAttacks.push({ regionIdx, sev, alertId, t0: performance.now(), dur: 2200 });
+  regionHits[regionIdx]++;
+  regionLastHit[regionIdx] = performance.now();
+  const active = mapAttacks.filter(a => performance.now() - a.t0 < a.dur + 1500).length;
+  $('attackCount').textContent = active + ' active';
+}
+
+ALERTS.forEach(a => { if (a.region !== undefined) addMapAttack(a.region, a.sev, a.id); });
+
+function drawRegion(ctx, r, W, H, active) {
+  const cx = r.cx * W, cy = r.cy * H, rx = r.rx * W, ry = r.ry * H;
+  ctx.beginPath();
+  r.pts.forEach(([px, py], i) => {
+    const x = cx + px * rx, y = cy + py * ry;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = active ? r.color + '30' : r.color + '1a'; ctx.fill();
+  ctx.strokeStyle = active ? r.color + 'bb' : r.color + '60';
+  ctx.lineWidth = active ? 1.8 : 1; ctx.stroke();
+  if (active) { ctx.strokeStyle = r.color + '22'; ctx.lineWidth = 6; ctx.stroke(); }
+}
+
+function drawMap(ts) {
+  const cv = $('mapCanvas');
+  const W = cv.width, H = cv.height;
+  if (!W || !H) { requestAnimationFrame(drawMap); return; }
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  // deep background
+  const bgGrad = ctx.createRadialGradient(W*0.5, H*0.5, 0, W*0.5, H*0.5, Math.max(W,H)*0.72);
+  bgGrad.addColorStop(0, '#0d1f30'); bgGrad.addColorStop(0.5, '#081520'); bgGrad.addColorStop(1, '#040d14');
+  ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
+  // ambient particles
+  mapParticles.forEach(p => {
+    p.x = (p.x + p.vx + 1) % 1; p.y = (p.y + p.vy + 1) % 1;
+    const a = p.alpha * (0.5 + 0.5 * Math.sin(ts * 0.001 + p.phase));
+    ctx.beginPath(); ctx.arc(p.x * W, p.y * H, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(56,182,255,' + a.toFixed(2) + ')'; ctx.fill();
+  });
+
+  // grid
+  ctx.strokeStyle = 'rgba(56,182,255,0.05)'; ctx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += W / 9) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += H / 7) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // map title
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,229,160,0.25)';
+  ctx.font = "bold " + Math.max(7, W * 0.035) + "px 'Share Tech Mono',monospace";
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('POKÉMON WORLD', 6, 5);
+  ctx.restore();
+
+  // regions (active glow)
+  const now = performance.now();
+  const activeRegions = new Set(mapAttacks.filter(a => (now - a.t0) < a.dur + 400).map(a => a.regionIdx));
+  REGIONS.forEach((r, i) => {
+    const isActive  = activeRegions.has(i);
+    const isHovered = i === hoveredRegion;
+    const isFiltered = i === regionFilter;
+    const auraR = Math.max(r.rx, r.ry) * Math.max(W, H) * (isActive ? 1.8 : isHovered ? 1.5 : 1.0);
+    const aura = ctx.createRadialGradient(r.cx*W, r.cy*H, 0, r.cx*W, r.cy*H, auraR);
+    aura.addColorStop(0, r.color + (isActive ? '28' : isHovered ? '22' : '12')); aura.addColorStop(1, r.color + '00');
+    ctx.beginPath(); ctx.arc(r.cx*W, r.cy*H, auraR, 0, Math.PI*2);
+    ctx.fillStyle = aura; ctx.fill();
+    if (isHovered || isFiltered) {
+      ctx.save(); ctx.shadowColor = r.color; ctx.shadowBlur = isFiltered ? 12 : 8;
+      drawRegion(ctx, r, W, H, true);
+      ctx.restore();
+    } else {
+      drawRegion(ctx, r, W, H, isActive);
+    }
+  });
+  // region filter indicator
+  if (regionFilter >= 0) {
+    ctx.save(); ctx.fillStyle = REGIONS[regionFilter].color;
+    ctx.font = "bold 8px 'Share Tech Mono',monospace";
+    ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.globalAlpha = 0.9;
+    ctx.fillText('\u25bc ' + REGIONS[regionFilter].name, W - 6, 6);
+    ctx.restore();
+  }
+
+  // labels
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const fs = Math.max(7, Math.min(W * 0.034, 10));
+  ctx.font = fs + "px 'Share Tech Mono',monospace";
+  REGIONS.forEach(r => { ctx.fillStyle = r.color + 'aa'; ctx.fillText(r.name, r.cx * W, r.cy * H); });
+  // region hit counters
+  REGIONS.forEach((r, i) => {
+    if (!regionHits[i]) return;
+    const age = now - regionLastHit[i];
+    if (age > 30000) return;
+    ctx.save(); ctx.globalAlpha = Math.max(0, 1 - age / 30000);
+    ctx.font = "bold 7px 'Share Tech Mono',monospace"; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = r.color; ctx.fillText('\u00d7' + regionHits[i], r.cx * W + 9, r.cy * H - 5);
+    ctx.restore();
+  });
+
+  // HQ pulse — triple rings
+  const hx = HQ.cx * W, hy = HQ.cy * H;
+  [0, 0.33, 0.66].forEach(offset => {
+    const hpt = ((ts / 1200) + offset) % 1;
+    ctx.beginPath(); ctx.arc(hx, hy, 5 + hpt * 14, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(0,229,160,' + (0.55 - hpt * 0.55) + ')';
+    ctx.lineWidth = 1.2; ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(hx, hy, 4, 0, Math.PI * 2); ctx.fillStyle = '#00e5a0'; ctx.fill();
+  ctx.fillStyle = '#00e5a088'; ctx.font = fs + "px 'Share Tech Mono',monospace";
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('HQ', hx, hy - 10);
+
+  // asset criticality markers
+  const assetColors = { crown:'#ffd700', high:'#fb923c', medium:'#38b6ff' };
+  ASSETS.forEach(asset => {
+    const ax2 = asset.ox * W, ay2 = asset.oy * H;
+    const col2 = assetColors[asset.crit];
+    const pulse2 = 0.55 + 0.45 * Math.sin(ts * 0.0018 + asset.ox * 10);
+    ctx.save();
+    ctx.globalAlpha = asset.crit === 'crown' ? pulse2 : 0.65;
+    ctx.beginPath(); ctx.moveTo(ax2, ay2-4); ctx.lineTo(ax2+4, ay2); ctx.lineTo(ax2, ay2+4); ctx.lineTo(ax2-4, ay2); ctx.closePath();
+    ctx.fillStyle = col2 + '33'; ctx.fill();
+    ctx.strokeStyle = col2; ctx.lineWidth = 0.8; ctx.stroke();
+    ctx.globalAlpha = 0.75;
+    ctx.font = "6px 'Share Tech Mono',monospace"; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = col2; ctx.fillText(asset.name, ax2 + 6, ay2);
+    ctx.restore();
+  });
+
+  // attacks
+  mapAttacks.forEach(atk => {
+    const elapsed = now - atk.t0;
+    if (elapsed > atk.dur + 1600) return;
+    const r = REGIONS[atk.regionIdx];
+    const ax = r.cx * W, ay = r.cy * H;
+    const color = SEV_MAP[atk.sev];
+
+    // pulse ring
+    const pp = (elapsed / 700) % 1;
+    const alpha = Math.floor((1 - pp) * 180).toString(16).padStart(2, '0');
+    ctx.beginPath(); ctx.arc(ax, ay, 3 + pp * 9, 0, Math.PI * 2);
+    ctx.strokeStyle = color + alpha; ctx.lineWidth = 1.2; ctx.stroke();
+
+    // origin dot
+    ctx.beginPath(); ctx.arc(ax, ay, 3.5, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+
+    // origin label (region + actor)
+    if (elapsed < atk.dur + 400) {
+      const ri = REGION_INTEL[atk.regionIdx];
+      const labelAlpha = elapsed < atk.dur ? 1 : 1 - (elapsed - atk.dur) / 400;
+      const labelFs = Math.max(6, Math.min(W * 0.028, 8));
+      ctx.save();
+      ctx.globalAlpha = labelAlpha * 0.92;
+      ctx.font = "bold " + labelFs + "px 'Share Tech Mono',monospace";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      const label1 = ri.name;
+      const label2 = ri.actor;
+      const bot = (atk.alertId !== undefined) ? getBotForAlert(atk.alertId, atk.regionIdx) : null;
+      const label3 = bot ? bot.id : null;
+      const lines = label3 ? 3 : 2;
+      const lw = Math.max(ctx.measureText(label1).width, ctx.measureText(label2).width, label3 ? ctx.measureText(label3).width : 0) + 8;
+      const lh = labelFs * lines + (lines === 3 ? 10 : 8), lx = ax - lw / 2;
+      const lyAbove = ay - 16 - lh;
+      const ly = lyAbove < 2 ? ay + 14 : lyAbove;
+      ctx.fillStyle = 'rgba(7,16,26,0.82)';
+      ctx.beginPath();
+      const rad = 3;
+      ctx.moveTo(lx + rad, ly); ctx.lineTo(lx + lw - rad, ly);
+      ctx.arcTo(lx + lw, ly, lx + lw, ly + rad, rad);
+      ctx.lineTo(lx + lw, ly + lh - rad);
+      ctx.arcTo(lx + lw, ly + lh, lx + lw - rad, ly + lh, rad);
+      ctx.lineTo(lx + rad, ly + lh);
+      ctx.arcTo(lx, ly + lh, lx, ly + lh - rad, rad);
+      ctx.lineTo(lx, ly + rad);
+      ctx.arcTo(lx, ly, lx + rad, ly, rad);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = color + '88'; ctx.lineWidth = 0.8; ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.fillText(label1, ax, ly + labelFs + 3);
+      ctx.fillStyle = '#cfe3f0aa';
+      ctx.fillText(label2, ax, ly + labelFs * 2 + 5);
+      if (label3) { ctx.fillStyle = '#00e5a0cc'; ctx.fillText(label3, ax, ly + labelFs * 3 + 7); }
+      ctx.restore();
+    }
+
+    // arc to HQ
+    if (elapsed < atk.dur) {
+      const prog = elapsed / atk.dur;
+      const mx = (ax + hx) / 2, my = Math.min(ay, hy) - Math.abs(hx - ax) * 0.32;
+      // C: trajectory preview (dashed full path)
+      ctx.save(); ctx.globalAlpha = 0.09; ctx.setLineDash([2, 5]);
+      ctx.beginPath();
+      for (let i = 0; i <= 24; i++) {
+        const t = i / 24;
+        const bx2 = (1-t)*(1-t)*ax + 2*(1-t)*t*mx + t*t*hx;
+        const by2 = (1-t)*(1-t)*ay + 2*(1-t)*t*my + t*t*hy;
+        i === 0 ? ctx.moveTo(bx2, by2) : ctx.lineTo(bx2, by2);
+      }
+      ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.stroke();
+      ctx.setLineDash([]); ctx.restore();
+      // arc progress
+      ctx.beginPath();
+      const steps = Math.floor(prog * 24);
+      for (let i = 0; i <= steps; i++) {
+        const t = i / 24;
+        const bx = (1-t)*(1-t)*ax + 2*(1-t)*t*mx + t*t*hx;
+        const by = (1-t)*(1-t)*ay + 2*(1-t)*t*my + t*t*hy;
+        i === 0 ? ctx.moveTo(bx, by) : ctx.lineTo(bx, by);
+      }
+      const grad = ctx.createLinearGradient(ax, ay, hx, hy);
+      grad.addColorStop(0, color + '00'); grad.addColorStop(1, color + 'cc');
+      // B: severity-based arc width + glow
+      const arcW = atk.sev === 'crit' ? 2.5 : atk.sev === 'high' ? 1.8 : 1.2;
+      const glowAlpha = atk.sev === 'crit' ? 0.38 : atk.sev === 'high' ? 0.26 : 0.16;
+      ctx.strokeStyle = grad; ctx.lineWidth = arcW * 3; ctx.globalAlpha = glowAlpha; ctx.stroke();
+      ctx.globalAlpha = 1; ctx.strokeStyle = grad; ctx.lineWidth = arcW; ctx.stroke();
+      // A: comet trail + leading dot
+      if (steps > 0) {
+        const t2 = steps / 24;
+        for (let k = 6; k >= 1; k--) {
+          const tk = Math.max(0, t2 - k * 0.04);
+          const tx = (1-tk)*(1-tk)*ax + 2*(1-tk)*tk*mx + tk*tk*hx;
+          const ty = (1-tk)*(1-tk)*ay + 2*(1-tk)*tk*my + tk*tk*hy;
+          ctx.beginPath(); ctx.arc(tx, ty, Math.max(0.5, 2.2 - k * 0.28), 0, Math.PI * 2);
+          ctx.fillStyle = color + Math.floor((1 - k / 7) * 160).toString(16).padStart(2, '0');
+          ctx.fill();
+        }
+        const lx2 = (1-t2)*(1-t2)*ax + 2*(1-t2)*t2*mx + t2*t2*hx;
+        const ly2 = (1-t2)*(1-t2)*ay + 2*(1-t2)*t2*my + t2*t2*hy;
+        ctx.beginPath(); ctx.arc(lx2, ly2, 2.5, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+      }
+    }
+
+    // H: HQ hit flash + particle burst
+    if (elapsed > atk.dur && elapsed < atk.dur + 700) {
+      const ft = (elapsed - atk.dur) / 700;
+      const fa = Math.floor((1 - ft) * 160).toString(16).padStart(2, '0');
+      ctx.beginPath(); ctx.arc(hx, hy, 6 + ft * 24, 0, Math.PI * 2);
+      ctx.strokeStyle = color + fa; ctx.lineWidth = 2; ctx.stroke();
+      for (let p = 0; p < 8; p++) {
+        const angle = (p / 8) * Math.PI * 2 + atk.regionIdx;
+        const dist = ft * 18;
+        const px = hx + Math.cos(angle) * dist, py = hy + Math.sin(angle) * dist;
+        ctx.beginPath(); ctx.arc(px, py, Math.max(0.5, 2 * (1 - ft)), 0, Math.PI * 2);
+        ctx.fillStyle = color + Math.floor((1 - ft) * 200).toString(16).padStart(2, '0'); ctx.fill();
+      }
+    }
+    // D: echo connection line — fades over 8s after impact
+    if (elapsed > atk.dur && elapsed < atk.dur + 8000) {
+      const fadeT = (elapsed - atk.dur) / 8000;
+      ctx.save(); ctx.globalAlpha = (1 - fadeT) * 0.12; ctx.setLineDash([2, 6]);
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(hx, hy);
+      ctx.strokeStyle = color; ctx.lineWidth = 0.7; ctx.stroke();
+      ctx.setLineDash([]); ctx.restore();
+    }
+  });
+
+  mapAttacks = mapAttacks.filter(a => (now - a.t0) < a.dur + 8200);
+
+  // scanlines
+  ctx.fillStyle = 'rgba(0,0,0,0.045)';
+  for (let sy = 0; sy < H; sy += 3) ctx.fillRect(0, sy, W, 1);
+
+  requestAnimationFrame(drawMap);
+}
+
+function initMap() {
+  const cv = $('mapCanvas');
+  function resize() { const wrap = cv.parentElement; cv.width = wrap.clientWidth; cv.height = wrap.clientHeight; }
+  resize();
+  new ResizeObserver(resize).observe(cv.parentElement);
+  requestAnimationFrame(drawMap);
+
+  /* ── MAP MOUSE INTERACTIONS ── */
+  cv.addEventListener('mousemove', e => {
+    const rect = cv.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (cv.width  / rect.width);
+    const my = (e.clientY - rect.top)  * (cv.height / rect.height);
+    hoveredRegion = REGIONS.findIndex(r => pointInRegion(mx, my, r, cv.width, cv.height));
+    const tip = $('mapTooltip');
+    if (hoveredRegion >= 0) {
+      const r  = REGIONS[hoveredRegion];
+      const ri = REGION_INTEL[hoveredRegion];
+      const hits = regionHits[hoveredRegion] || 0;
+      const lh = regionLastHit[hoveredRegion];
+      const lastHitStr = lh ? relTime(Date.now() - lh) + ' ago' : 'Never';
+      const openInc = INCIDENTS.filter(i => !i.closed && i.region === hoveredRegion).length;
+      tip.style.display = 'block';
+      tip.style.left = (e.clientX + 14) + 'px';
+      tip.style.top  = (e.clientY - 10) + 'px';
+      tip.innerHTML =
+        '<div style="color:' + r.color + ';font-weight:700;margin-bottom:4px;font-size:11px">' + r.name + '</div>' +
+        '<div style="color:var(--muted)">Actor: <span style="color:var(--text)">'    + ri.actor     + '</span></div>' +
+        '<div style="color:var(--muted)">Attacks: <span style="color:var(--text)">'  + hits          + '</span></div>' +
+        '<div style="color:var(--muted)">Last hit: <span style="color:var(--text)">' + lastHitStr    + '</span></div>' +
+        '<div style="color:var(--muted)">Open inc: <span style="color:var(--text)">' + openInc       + '</span></div>' +
+        (regionFilter === hoveredRegion
+          ? '<div style="color:var(--accent);margin-top:4px">&#9679; Filtering active</div>'
+          : '<div style="color:var(--muted);margin-top:4px">Click to filter alerts</div>');
+      cv.style.cursor = 'pointer';
+    } else {
+      tip.style.display = 'none';
+      cv.style.cursor = 'default';
+    }
+  });
+  cv.addEventListener('mouseleave', () => {
+    hoveredRegion = -1;
+    $('mapTooltip').style.display = 'none';
+  });
+  cv.addEventListener('click', e => {
+    const rect = cv.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (cv.width  / rect.width);
+    const my = (e.clientY - rect.top)  * (cv.height / rect.height);
+    const clicked = REGIONS.findIndex(r => pointInRegion(mx, my, r, cv.width, cv.height));
+    regionFilter = (clicked >= 0 && clicked === regionFilter) ? -1 : clicked;
+    selectedIdx = -1; renderAlerts();
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   SESSION ATTACK TIMELINE
+   ══════════════════════════════════════════════════════════ */
+const tlEvents = []; // { t: timestamp, sev: 'crit'|'high'|'med', alertId }
+let tlVisible = true;
+let tlHoverIdx = -1;
+
+function tlPush(alertId, sev) {
+  tlEvents.push({ t: Date.now(), sev, alertId });
+  $('timelineEvtCount').textContent = tlEvents.length + ' event' + (tlEvents.length === 1 ? '' : 's');
+  if (tlVisible) drawTimeline();
+}
+
+function toggleTimeline() {
+  tlVisible = !tlVisible;
+  const canvas = $('timelineCanvas');
+  canvas.style.display = tlVisible ? 'block' : 'none';
+  $('timelineToggle').textContent = tlVisible ? '▲ hide' : '▼ show';
+}
+
+function drawTimeline() {
+  const cv = $('timelineCanvas');
+  const W = cv.offsetWidth || 800, H = 32;
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  // background
+  ctx.fillStyle = 'rgba(7,16,26,0.6)'; ctx.fillRect(0, 0, W, H);
+  // axis line
+  ctx.strokeStyle = 'rgba(56,182,255,0.15)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, H * 0.6); ctx.lineTo(W, H * 0.6); ctx.stroke();
+
+  if (!tlEvents.length) return;
+  const sessionStart = window._sessionStart || Date.now();
+  const now = Date.now();
+  const span = Math.max(now - sessionStart, 60000);
+  const SEV_COLOR = { crit: '#f04545', high: '#f5a623', med: '#38b6ff' };
+
+  tlEvents.forEach((ev, i) => {
+    const x = ((ev.t - sessionStart) / span) * W;
+    const col = SEV_COLOR[ev.sev] || '#38b6ff';
+    const isHov = i === tlHoverIdx;
+    ctx.save();
+    if (isHov) { ctx.shadowColor = col; ctx.shadowBlur = 10; }
+    ctx.beginPath(); ctx.arc(x, H * 0.6, isHov ? 5 : 3, 0, Math.PI * 2);
+    ctx.fillStyle = col; ctx.fill();
+    if (isHov) {
+      ctx.restore(); ctx.save();
+      ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.globalAlpha = 0.4;
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H * 0.55); ctx.stroke();
+      ctx.setLineDash([]); ctx.restore();
+    } else {
+      ctx.restore();
+    }
+  });
+
+  // hover tooltip text
+  if (tlHoverIdx >= 0 && tlHoverIdx < tlEvents.length) {
+    const ev = tlEvents[tlHoverIdx];
+    const x = ((ev.t - sessionStart) / span) * W;
+    const a = ALERTS.find(a => a.id === ev.alertId);
+    const label = (a ? a.name.slice(0, 28) : 'Alert') + '  ·  ' + ev.sev.toUpperCase() + '  ·  ' + relTime(Date.now() - ev.t);
+    ctx.font = "8px 'Share Tech Mono',monospace"; ctx.textBaseline = 'top';
+    const tw = ctx.measureText(label).width;
+    const tx = Math.min(Math.max(x - tw / 2, 2), W - tw - 2);
+    ctx.fillStyle = 'rgba(13,27,42,0.9)'; ctx.fillRect(tx - 2, 1, tw + 4, 12);
+    ctx.fillStyle = SEV_COLOR[ev.sev]; ctx.fillText(label, tx, 2);
+  }
+
+  // "now" marker
+  ctx.save(); ctx.globalAlpha = 0.5;
+  ctx.fillStyle = '#00e5a0'; ctx.fillRect(W - 2, H * 0.3, 2, H * 0.5);
+  ctx.restore();
+}
+
+// Timeline mouse interactions
+(function() {
+  const cv = $('timelineCanvas');
+  if (!cv) return;
+  cv.addEventListener('mousemove', e => {
+    const rect = cv.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width;
+    const sessionStart = window._sessionStart || Date.now();
+    const now = Date.now();
+    const span = Math.max(now - sessionStart, 60000);
+    let closest = -1, minD = 12;
+    tlEvents.forEach((ev, i) => {
+      const x = ((ev.t - sessionStart) / span) * cv.offsetWidth;
+      const px = mx * cv.offsetWidth;
+      const d = Math.abs(px - x);
+      if (d < minD) { minD = d; closest = i; }
+    });
+    tlHoverIdx = closest;
+    cv.style.cursor = closest >= 0 ? 'pointer' : 'default';
+    drawTimeline();
+  });
+  cv.addEventListener('mouseleave', () => { tlHoverIdx = -1; drawTimeline(); });
+  cv.addEventListener('click', () => {
+    if (tlHoverIdx >= 0) {
+      const ev = tlEvents[tlHoverIdx];
+      const a = ALERTS.find(a => a.id === ev.alertId);
+      if (a && !alertState[a.id].dismissed) openDetail(ev.alertId);
+    }
+  });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   MITRE ATT&CK HEATMAP
+   ══════════════════════════════════════════════════════════ */
+const MITRE_TACTICS = ['Reconnaissance','Initial Access','Execution','Persistence','Priv Escalation','Defense Evasion','Credential Access','Discovery','Lateral Movement','Collection','C2','Exfiltration','Impact','Resource Dev'];
+const MITRE_TECHNIQUES = {
+  'Reconnaissance':    ['Active Scanning','OSINT','Phishing Recon','Network Mapping'],
+  'Initial Access':    ['Phishing','Exploit Public App','Valid Accounts','Supply Chain'],
+  'Execution':         ['PowerShell','WMI','Cmd Shell','Scheduled Task','Script Host'],
+  'Persistence':       ['Registry Run Keys','Scheduled Task','Boot Autostart','Account Manip'],
+  'Priv Escalation':   ['Token Impersonation','Exploit Weakness','Sudo/Su','DLL Injection'],
+  'Defense Evasion':   ['Obfuscation','Disable Logging','LOLBins','Rootkit'],
+  'Credential Access': ['Brute Force','Credential Dump','Keylogging','Pass-the-Hash'],
+  'Discovery':         ['Network Scan','System Info','Account Enum','Process List'],
+  'Lateral Movement':  ['Pass-the-Ticket','Remote Services','WMI Lateral','SMB/Admin$'],
+  'Collection':        ['Data Staged','Screen Capture','Clipboard','Keylogging'],
+  'C2':                ['DNS Tunnelling','HTTP Beacon','ICMP C2','Encrypted C2'],
+  'Exfiltration':      ['Exfil over C2','Cloud Sync','FTP Exfil','HTTPS POST'],
+  'Impact':            ['Ransomware','Data Destruction','DDoS','Defacement'],
+  'Resource Dev':      ['Infra Acquisition','Malware Dev','Compromise Infra','Account Creation']
+};
+let hmMitreFilter = null;
+
+function openHeatmap() {
+  // Count hits per technique from active alerts
+  const hitMap = {};
+  ALERTS.filter(a => !alertState[a.id].dismissed).forEach(a => {
+    a.mitre.forEach(t => { hitMap[t] = (hitMap[t] || 0) + 1; });
+  });
+  const grid = $('heatmapGrid');
+  grid.innerHTML = '';
+  MITRE_TACTICS.forEach(tactic => {
+    const techs = MITRE_TECHNIQUES[tactic] || [];
+    // tactic header cell spanning column
+    const th = document.createElement('div');
+    th.className = 'hm-tactic'; th.textContent = tactic; grid.appendChild(th);
+  });
+  // technique rows — find max rows
+  const maxRows = Math.max(...MITRE_TACTICS.map(t => (MITRE_TECHNIQUES[t] || []).length));
+  for (let row = 0; row < maxRows; row++) {
+    MITRE_TACTICS.forEach(tactic => {
+      const tech = (MITRE_TECHNIQUES[tactic] || [])[row];
+      const cell = document.createElement('div');
+      if (!tech) { cell.style.height = '24px'; grid.appendChild(cell); return; }
+      const hits = hitMap[tech] || 0;
+      let cls = 'hm-cell';
+      if (hits >= 6) cls += ' hm-hit-3';
+      else if (hits >= 3) cls += ' hm-hit-2';
+      else if (hits >= 1) cls += ' hm-hit-1';
+      if (hmMitreFilter === tech) cls += ' hm-active';
+      cell.className = cls;
+      cell.textContent = tech;
+      cell.title = tech + ' — ' + hits + ' hit' + (hits !== 1 ? 's' : '');
+      cell.onclick = () => {
+        hmMitreFilter = (hmMitreFilter === tech) ? null : tech;
+        mitreFilter = hmMitreFilter;
+        selectedIdx = -1; renderAlerts(); updateMitreBars();
+        openHeatmap(); // re-render to show active state
+      };
+      grid.appendChild(cell);
+    });
+  }
+  $('heatmapOverlay').style.display = 'flex';
+}
+function closeHeatmap() { $('heatmapOverlay').style.display = 'none'; }
+
+/* ══════════════════════════════════════════════════════════
+   BULK ALERT OPERATIONS
+   ══════════════════════════════════════════════════════════ */
+const selectedAlerts = new Set();
+let bulkMode = false;
+
+function updateBulkBar() {
+  const bar = $('bulkBar');
+  if (selectedAlerts.size > 0) {
+    bar.classList.add('visible');
+    $('bulkCount').textContent = selectedAlerts.size + ' alert' + (selectedAlerts.size > 1 ? 's' : '') + ' selected';
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+function toggleBulkSelect(id, e) {
+  e.stopPropagation();
+  if (selectedAlerts.has(id)) selectedAlerts.delete(id);
+  else selectedAlerts.add(id);
+  updateBulkBar();
+  renderAlerts();
+}
+function clearBulkSelection() {
+  selectedAlerts.clear(); updateBulkBar(); renderAlerts();
+}
+function bulkAck() {
+  selectedAlerts.forEach(id => { alertState[id].acked = true; });
+  showToast({ id: 0, name: selectedAlerts.size + ' alerts acknowledged', sev: 'high', src: 'Bulk action' });
+  clearBulkSelection(); renderAlerts(); updateSOCMetrics();
+}
+function bulkDismiss() {
+  selectedAlerts.forEach(id => { alertState[id].dismissed = true; });
+  showToast({ id: 0, name: selectedAlerts.size + ' alerts dismissed', sev: 'med', src: 'Bulk action' });
+  clearBulkSelection(); renderAlerts(); updateCritCount();
+}
+function bulkTicket() {
+  showToast({ id: 0, name: 'Ticket created for ' + selectedAlerts.size + ' alerts', sev: 'high', src: 'Bulk action' });
+  clearBulkSelection();
+}
+
+/* ══════════════════════════════════════════════════════════
+   INCIDENT DETAIL MODAL
+   ══════════════════════════════════════════════════════════ */
+const incidentState = {}; // { [incId]: { playbookDone: Set, notes: string, closed: bool } }
+
+const INC_PLAYBOOKS = {
+  default: ['Isolate affected host from network','Block source IP at perimeter firewall','Collect memory dump and running processes','Preserve logs from affected systems','Escalate to Tier 2 analyst','Notify stakeholders if data exfil confirmed']
+};
+
+function getIncidentState(id) {
+  if (!incidentState[id]) incidentState[id] = { playbookDone: new Set(), notes: '' };
+  return incidentState[id];
+}
+
+function openIncModal(incId) {
+  const inc = INCIDENTS.find(i => i.id === incId);
+  if (!inc) return;
+  const state = getIncidentState(incId);
+  const alerts = ALERTS.filter(a => inc.alertIds.includes(a.id));
+  const SEV_COL = { crit: '#f04545', high: '#f5a623', med: '#38b6ff' };
+  const now = Date.now();
+  const duration = Math.floor((now - (Math.min(...alerts.map(a => alertState[a.id].arrivedAt)))) / 60000);
+  const playbook = INC_PLAYBOOKS[inc.primaryTactic] || INC_PLAYBOOKS.default;
+
+  // Timeline calculation
+  const tlMin = Math.min(...alerts.map(a => alertState[a.id].arrivedAt));
+  const tlMax = Math.max(Math.max(...alerts.map(a => alertState[a.id].arrivedAt)), tlMin + 60000);
+
+  const tlDots = alerts.map(a => {
+    const pct = ((alertState[a.id].arrivedAt - tlMin) / (tlMax - tlMin)) * 92 + 4;
+    return '<div style="position:absolute;left:' + pct.toFixed(1) + '%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:' + SEV_COL[a.sev] + ';box-shadow:0 0 4px ' + SEV_COL[a.sev] + ';cursor:pointer" title="' + a.name + '" onclick="closeIncModal();openDetail(' + a.id + ')"></div>';
+  }).join('');
+
+  const alertRows = alerts.map(a => {
+    const acked = alertState[a.id].acked;
+    return '<div class="inc-alert-row"><span class="sev-badge ' + a.sev + '">' + a.sev.toUpperCase() + '</span><span style="flex:1;color:var(--text)">' + a.name + '</span><span style="color:var(--muted)">' + relTime(alertState[a.id].arrivedAt) + '</span>' + (acked ? '<span style="color:var(--accent);font-size:9px">✓ ACK</span>' : '') + '</div>';
+  }).join('');
+
+  const playbookHTML = playbook.map((step, i) => {
+    const done = state.playbookDone.has(i);
+    return '<label class="inc-playbook-step' + (done ? ' done' : '') + '"><input type="checkbox" ' + (done ? 'checked' : '') + ' onchange="togglePlaybookStep(\'' + incId + '\',' + i + ',this.checked)"> ' + step + '</label>';
+  }).join('');
+
+  const closedBadge = inc.closed ? '<span style="color:var(--muted);font-size:9px;padding:1px 5px;border:1px solid var(--border);border-radius:2px">CLOSED</span>' : '<span style="color:var(--accent);font-size:9px;padding:1px 5px;border:1px solid var(--accent);border-radius:2px">OPEN</span>';
+
+  $('incPanel').innerHTML =
+    '<div class="inc-panel-header">' +
+      '<div><div class="inc-panel-id">' + incId + ' ' + closedBadge + '</div>' +
+      '<div class="inc-panel-meta">' + alerts.length + ' alerts \u00b7 ' + duration + 'm duration \u00b7 ' + REGION_INTEL[inc.region].name + '</div></div>' +
+      '<button class="inc-panel-close" onclick="closeIncModal()">Close \u00d7</button>' +
+    '</div>' +
+    '<div class="inc-section-label">TIMELINE</div>' +
+    '<div class="inc-tl">' + tlDots + '</div>' +
+    '<div class="inc-section-label">CORRELATED ALERTS (' + alerts.length + ')</div>' +
+    alertRows +
+    '<div class="inc-section-label">RESPONSE PLAYBOOK</div>' +
+    '<div id="incPlaybook">' + playbookHTML + '</div>' +
+    '<div class="inc-section-label">ANALYST NOTES</div>' +
+    '<textarea class="inc-notes" id="incNotes" placeholder="Add incident notes...">' + (state.notes || '') + '</textarea>' +
+    '<div style="display:flex;gap:8px;margin-top:6px">' +
+      (!inc.closed ? '<button class="inc-close-btn" onclick="closeIncident(\'' + incId + '\')">Close Incident</button>' : '<button class="inc-reopen-btn" onclick="reopenIncident(\'' + incId + '\')">Reopen</button>') +
+    '</div>';
+
+  // Wire up notes autosave
+  const notesEl = $('incNotes');
+  if (notesEl) notesEl.addEventListener('input', () => { state.notes = notesEl.value; });
+  $('incOverlay').style.display = 'flex';
+}
+function closeIncModal() { $('incOverlay').style.display = 'none'; }
+function togglePlaybookStep(incId, idx, done) {
+  const state = getIncidentState(incId);
+  if (done) state.playbookDone.add(idx); else state.playbookDone.delete(idx);
+  const label = document.querySelectorAll('#incPlaybook .inc-playbook-step')[idx];
+  if (label) label.classList.toggle('done', done);
+}
+function closeIncident(id) {
+  const inc = INCIDENTS.find(i => i.id === id);
+  if (inc) inc.closed = true;
+  closeIncModal(); renderAlerts(); updateIncidentCount();
+}
+function reopenIncident(id) {
+  const inc = INCIDENTS.find(i => i.id === id);
+  if (inc) inc.closed = false;
+  closeIncModal(); openIncModal(id);
+}
+
+/* ══════════════════════════════════════════════════════════
+   THREAT POSTURE RADAR
+   ══════════════════════════════════════════════════════════ */
+const RADAR_AXES = [
+  { label: 'Network',   key: 'net',   color: '#38b6ff' },
+  { label: 'Endpoint',  key: 'ep',    color: '#f04545' },
+  { label: 'Identity',  key: 'id',    color: '#f5a623' },
+  { label: 'Data',      key: 'data',  color: '#e879f9' },
+  { label: 'Cloud',     key: 'cloud', color: '#00e5a0' },
+  { label: 'Supply',    key: 'sup',   color: '#7c6fff' },
+];
+const RADAR_KEYWORDS = {
+  net:   ['firewall','port scan','ddos','network','dns','smtp','http','snmp','tcp','udp'],
+  ep:    ['malware','lateral','execution','powershell','ransomware','shell','process','inject'],
+  id:    ['brute force','credential','phishing','login','password','authentication','privilege','account'],
+  data:  ['exfil','sql','dlp','data','database','backup','storage','s3'],
+  cloud: ['aws','azure','gcp','cloud','bucket','iam','lambda','kubernetes'],
+  sup:   ['cve','supply','dependency','package','update','vendor','library'],
+};
+
+function calcRadarScores() {
+  const scores = { net: 0, ep: 0, id: 0, data: 0, cloud: 0, sup: 0 };
+  const active = ALERTS.filter(a => !alertState[a.id].dismissed);
+  active.forEach(a => {
+    const text = (a.name + ' ' + (a.rule || '') + ' ' + a.mitre.join(' ')).toLowerCase();
+    const sevW = a.sev === 'crit' ? 3 : a.sev === 'high' ? 2 : 1;
+    Object.entries(RADAR_KEYWORDS).forEach(([key, kws]) => {
+      if (kws.some(kw => text.includes(kw))) scores[key] = Math.min(100, scores[key] + sevW * 15);
+    });
+  });
+  return scores;
+}
+
+function drawRadar() {
+  const cv = $('radarCanvas');
+  if (!cv) return;
+  const W = cv.offsetWidth || 200, H = 130;
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2 + 4;
+  const R = Math.min(W, H) * 0.40;
+  const N = RADAR_AXES.length;
+  const scores = calcRadarScores();
+
+  // grid rings
+  [0.33, 0.66, 1].forEach(frac => {
+    ctx.beginPath();
+    RADAR_AXES.forEach((ax, i) => {
+      const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+      const x = cx + Math.cos(angle) * R * frac;
+      const y = cy + Math.sin(angle) * R * frac;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(56,182,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+  });
+  // spokes
+  RADAR_AXES.forEach((ax, i) => {
+    const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * R, cy + Math.sin(angle) * R);
+    ctx.strokeStyle = 'rgba(56,182,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+  });
+  // data polygon
+  ctx.beginPath();
+  RADAR_AXES.forEach((ax, i) => {
+    const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+    const score = (scores[ax.key] || 0) / 100;
+    const x = cx + Math.cos(angle) * R * score;
+    const y = cy + Math.sin(angle) * R * score;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(240,69,69,0.15)'; ctx.fill();
+  ctx.strokeStyle = '#f04545'; ctx.lineWidth = 1.5; ctx.stroke();
+  // dots on vertices
+  RADAR_AXES.forEach((ax, i) => {
+    const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+    const score = (scores[ax.key] || 0) / 100;
+    const x = cx + Math.cos(angle) * R * score;
+    const y = cy + Math.sin(angle) * R * score;
+    ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2);
+    const hot = score > 0.6;
+    ctx.fillStyle = hot ? '#f04545' : ax.color;
+    if (hot) { ctx.shadowColor = '#f04545'; ctx.shadowBlur = 6; }
+    ctx.fill(); ctx.shadowBlur = 0;
+  });
+  // axis labels
+  RADAR_AXES.forEach((ax, i) => {
+    const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+    const lx = cx + Math.cos(angle) * (R + 10);
+    const ly = cy + Math.sin(angle) * (R + 10);
+    ctx.font = "7px 'Share Tech Mono',monospace"; ctx.fillStyle = ax.color;
+    ctx.textAlign = lx < cx - 4 ? 'right' : lx > cx + 4 ? 'left' : 'center';
+    ctx.textBaseline = ly < cy - 4 ? 'bottom' : ly > cy + 4 ? 'top' : 'middle';
+    ctx.fillText(ax.label.toUpperCase(), lx, ly);
+  });
+}
+
+setInterval(drawRadar, 10000);
+
+/* ══════════════════════════════════════════════════════════
+   ANALYST NOTES
+   ══════════════════════════════════════════════════════════ */
+function saveNote() {
+  if (!openAlertId) return;
+  alertState[openAlertId].notes = $('dNotes').value;
+  renderAlerts(); // refresh row to show/hide note icon
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 5: ALERT TRIAGE CONFIDENCE SCORE
+   ══════════════════════════════════════════════════════════ */
+const RULE_BASE = {'IDS-8441':82,'IDS-7201':65,'IDS-5530':71,'IDS-3301':55,'IDS-9910':88,'IDS-9001':76,'IDS-3210':68,'IDS-5502':58,'PKI-0012':42};
+function calcTriage(alert) {
+  let s = (RULE_BASE[alert.rule] || 60) / 100;
+  const h = new Date().getHours();
+  if (h >= 22 || h <= 6) s = Math.min(1, s + 0.10);
+  const sameSrc = ALERTS.filter(a => a.src === alert.src && a.id !== alert.id).length;
+  if (sameSrc >= 2) s = Math.min(1, s + 0.12);
+  if (alert.sev === 'crit') s = Math.min(1, s + 0.08);
+  return Math.round(s * 100);
+}
+function triageHTML(alert) {
+  const pct = calcTriage(alert);
+  const cls = pct < 45 ? 'triage-fp' : pct < 70 ? 'triage-amb' : 'triage-tp';
+  return '<div class="triage-score"><div class="triage-bar"><div class="triage-fill ' + cls + '" style="width:' + pct + '%"></div></div><span class="triage-pct">AI:' + pct + '%</span></div>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 3: SOAR AUTOMATION FEED
+   ══════════════════════════════════════════════════════════ */
+const SOAR_TEMPLATES = {
+  crit: [
+    { icon:'🔒', fn: a => 'IP ' + a.src + ' \u2192 FIREWALL BLOCK', status:'DONE' },
+    { icon:'🛡', fn: a => 'Host ' + a.dst + ' \u2192 EDR QUARANTINE', status:'PENDING' },
+  ],
+  high: [
+    { icon:'🔗', fn: a => 'DNS ' + a.src.split(':')[0] + ' \u2192 SINKHOLE', status:'DONE' },
+    { icon:'📋', fn: a => 'Rule ' + a.rule + ' \u2192 WATCHLIST ADD', status:'DONE' },
+  ],
+  med: [
+    { icon:'🔍', fn: a => 'Alert #' + a.id + ' \u2192 TI ENRICHMENT', status:'PENDING' },
+  ]
+};
+let soarTotal = 0;
+const soarItems = [];
+function triggerSOAR(alert) {
+  const pool = SOAR_TEMPLATES[alert.sev] || SOAR_TEMPLATES.med;
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  const status = Math.random() < 0.08 ? 'FAILED' : chosen.status;
+  soarItems.unshift({ icon: chosen.icon, text: chosen.fn(alert), status, t: Date.now() });
+  if (soarItems.length > 15) soarItems.pop();
+  soarTotal++;
+  renderSOAR();
+}
+function renderSOAR() {
+  const feed = $('soarFeed'); if (!feed) return;
+  feed.innerHTML = soarItems.map(s => {
+    const age = Math.floor((Date.now() - s.t) / 1000);
+    const ageStr = age < 60 ? age + 's' : Math.floor(age / 60) + 'm';
+    const bc = s.status === 'DONE' ? 'soar-done' : s.status === 'FAILED' ? 'soar-fail' : 'soar-pend';
+    return '<div class="soar-row"><span class="soar-icon">' + s.icon + '</span><span class="soar-text">' + s.text + '</span><span class="soar-time">' + ageStr + '</span><span class="soar-badge ' + bc + '">' + s.status + '</span></div>';
+  }).join('');
+  const cnt = $('soarCount'); if (cnt) cnt.textContent = soarTotal + ' today';
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 7: EXECUTIVE RISK KPI BAR
+   ══════════════════════════════════════════════════════════ */
+const TACTIC_COVERAGE = [
+  [1,1,0,0],[1,0,0,0],[1,1,1,0],[1,1,0,0],[1,0,0,0],
+  [0,0,0,0],[1,1,1,1],[1,1,0,0],[1,0,0,0],[1,1,0,0],
+  [0,0,0,0],[1,1,0,0],[1,0,0,0],[0,0,0,0]
+];
+function updateExecBar() {
+  const bar = $('execBar'); if (!bar || !bar.classList.contains('open')) return;
+  const vis = getVisible();
+  const riskScore = Math.min(100, Math.round(
+    vis.reduce((s, a) => s + (a.sev === 'crit' ? 80 : a.sev === 'high' ? 50 : 20), 0) / (vis.length || 1) + vis.length * 1.5
+  ));
+  const covFlat = TACTIC_COVERAGE.flat();
+  const covPct = Math.round(covFlat.filter(Boolean).length / covFlat.length * 100);
+  const acked = Object.values(alertState).filter(s => s.ackedAt);
+  const mttd = acked.length ? Math.round(acked.reduce((s, a) => s + (a.ackedAt - a.arrivedAt), 0) / acked.length / 60000) : 0;
+  const totalSteps = Object.keys(incidentState).length * 6;
+  const doneSteps = Object.values(incidentState).reduce((s, i) => s + i.playbookDone.size, 0);
+  const pbPct = totalSteps ? Math.round(doneSteps / totalSteps * 100) : 0;
+  function setG(id, pct, highIsBad) {
+    const col = highIsBad ? (pct > 65 ? 'var(--danger)' : pct > 40 ? 'var(--warn)' : 'var(--accent)') : (pct > 60 ? 'var(--accent)' : pct > 30 ? 'var(--warn)' : 'var(--danger)');
+    const el = $(id); if (el) el.style.background = 'conic-gradient(' + col + ' ' + (pct * 3.6) + 'deg, rgba(255,255,255,0.07) 0deg)';
+  }
+  setG('eg0', riskScore, true);  const ev0 = $('ev0'); if (ev0) ev0.textContent = riskScore;
+  setG('eg1', covPct, false);    const ev1 = $('ev1'); if (ev1) ev1.textContent = covPct + '%';
+  setG('eg2', Math.min(100, mttd * 3), true); const ev2 = $('ev2'); if (ev2) ev2.textContent = mttd ? mttd + 'm' : '—';
+  setG('eg3', pbPct, false);     const ev3 = $('ev3'); if (ev3) ev3.textContent = pbPct + '%';
+}
+function toggleExecBar() {
+  const bar = $('execBar'); if (!bar) return;
+  bar.classList.toggle('open');
+  updateExecBar();
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 4: DETECTION COVERAGE MATRIX
+   ══════════════════════════════════════════════════════════ */
+function renderCoverageGrid() {
+  const grid = $('coverageGrid'); if (!grid) return;
+  const activeTactics = new Set(), hotTactics = new Set();
+  getVisible().forEach(a => { a.mitre.forEach(t => { activeTactics.add(t); if (a.sev === 'crit') hotTactics.add(t); }); });
+  let covered = 0, total = 0, html = '';
+  MITRE_TACTICS.forEach((tactic, ti) => {
+    (TACTIC_COVERAGE[ti] || [0,0,0,0]).forEach(hasCov => {
+      total++;
+      let cls = 'gap';
+      if (hasCov && hotTactics.has(tactic)) cls = 'hot';
+      else if (hasCov && activeTactics.has(tactic)) cls = 'active';
+      else if (hasCov) { cls = 'covered'; covered++; }
+      html += '<div class="cov-cell ' + cls + '" title="' + tactic + ' [' + cls.toUpperCase() + ']" onclick="setMitreFilter(\'' + tactic.replace(/'/g, '\\\'') + '\')"></div>';
+    });
+  });
+  grid.innerHTML = html;
+  const pct = $('coveragePct'); if (pct) pct.textContent = Math.round(covered / total * 100) + '%';
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 2: THREAT HUNT WORKBENCH
+   ══════════════════════════════════════════════════════════ */
+function runHunt() {
+  const field = ($('huntField') || {}).value || 'ip';
+  const q = ($('huntInput') || {}).value || '';
+  const query = q.trim().toLowerCase();
+  const res = $('huntResults'); if (!res) return;
+  if (!query) { res.innerHTML = ''; return; }
+  let am = 0, im = 0, lm = 0;
+  ALERTS.forEach(a => {
+    const hay = field === 'ip' ? (a.src + ' ' + a.dst) : field === 'rule' ? a.rule : field === 'mitre' ? a.mitre.join(' ') : field === 'hostname' ? (a.src + ' ' + a.dst) : a.name;
+    if (hay.toLowerCase().includes(query)) am++;
+  });
+  IOC_LIST.forEach(i => { if ((i.value + ' ' + i.feed).toLowerCase().includes(query)) im++; });
+  logBuffer.forEach(l => { if (l.msg.toLowerCase().includes(query)) lm++; });
+  res.innerHTML =
+    (am ? '<span class="hunt-chip hc-alerts" onclick="setSearchQuery(\'' + query.replace(/'/g, '\\\'') + '\')" title="Filter alerts">' + am + ' Alert' + (am > 1 ? 's' : '') + ' \u25b8</span>' : '') +
+    (im ? '<span class="hunt-chip hc-iocs" title="IOC matches">' + im + ' IOC' + (im > 1 ? 's' : '') + '</span>' : '') +
+    (lm ? '<span class="hunt-chip hc-logs" title="Log matches">' + lm + ' Log' + (lm > 1 ? 's' : '') + '</span>' : '') +
+    (!am && !im && !lm ? '<span style="color:var(--muted);font-size:var(--fs-xs);font-family:var(--mono)">no matches</span>' : '');
+}
+function quickHunt(field, q) {
+  const hf = $('huntField'); if (hf) hf.value = field;
+  const hi = $('huntInput'); if (hi) hi.value = q;
+  runHunt();
+}
+function setSearchQuery(q) {
+  const si = $('searchInput'); if (si) { si.value = q; searchQuery = q.toLowerCase(); selectedIdx = -1; renderAlerts(); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 8: PACKET EVIDENCE PREVIEW
+   ══════════════════════════════════════════════════════════ */
+function genPackets(alert) {
+  const rng = n => Math.abs(((alert.id * 31337 * (n + 1) * 1664525) + 1013904223) & 0x7fffffff) % 100;
+  const proto = ['TCP','TCP','TCP','UDP','ICMP'][rng(0) % 5];
+  const now = Date.now();
+  return Array.from({ length: 5 }, (_, i) => ({
+    n: i + 1,
+    time: new Date(now - rng(i + 1) * 800 + i * rng(i + 2) * 200).toISOString().slice(11, 23),
+    src: alert.src.split(':')[0] + ':' + (1024 + rng(i + 5) % 64000),
+    dst: alert.dst.split('/')[0] + ':' + [80, 443, 8080, 22, 3389][rng(i + 3) % 5],
+    proto,
+    flags: proto === 'TCP' ? ['SYN','SYN-ACK','ACK','PSH-ACK','RST'][i % 5] : '\u2014',
+    len: 40 + rng(i + 7) * 8,
+    info: ['Client Hello','Server Hello','Application Data','Encrypted Alert','FIN'][i % 5]
+  }));
+}
+function genHex(alert) {
+  const bytes = Array.from({ length: 48 }, (_, i) => ((alert.id * i * 257 + i * 31) & 0xff).toString(16).padStart(2, '0'));
+  return [0, 1, 2].map(i => {
+    const c = bytes.slice(i * 16, i * 16 + 16);
+    const ascii = c.map(b => { const n = parseInt(b, 16); return n >= 32 && n < 127 ? String.fromCharCode(n) : '.'; }).join('');
+    return (i * 16).toString(16).padStart(4, '0') + '  ' + c.join(' ') + '  |' + ascii + '|';
+  }).join('\n');
+}
+function renderPCAP(alert) {
+  const tbl = $('pcapTable'), hex = $('hexDump'); if (!tbl || !hex) return;
+  const pkts = genPackets(alert);
+  tbl.innerHTML = '<tr><th>#</th><th>Time</th><th>Source</th><th>Destination</th><th>Proto</th><th>Flags</th><th>Len</th><th>Info</th></tr>' +
+    pkts.map(p => '<tr><td>' + p.n + '</td><td>' + p.time + '</td><td>' + p.src + '</td><td>' + p.dst + '</td><td class="proto-' + p.proto.toLowerCase() + '">' + p.proto + '</td><td>' + p.flags + '</td><td>' + p.len + '</td><td>' + p.info + '</td></tr>').join('');
+  hex.textContent = genHex(alert);
+  const body = $('pcapBody'); if (body) body.style.display = 'none';
+  const tog = $('pcapToggle'); if (tog) tog.textContent = '\u25b6 expand';
+}
+function togglePCAP() {
+  const b = $('pcapBody'); if (!b) return;
+  const open = b.style.display === 'none';
+  b.style.display = open ? 'block' : 'none';
+  const t = $('pcapToggle'); if (t) t.textContent = open ? '\u25bc collapse' : '\u25b6 expand';
+}
+function copyPCAP() {
+  const t = ($('pcapTable') || {}).innerText + '\n' + (($('hexDump') || {}).textContent || '');
+  navigator.clipboard.writeText(t).then(() => showToast({ name: 'PCAP evidence copied to clipboard', sev: 'med' }));
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 6: THREAT ACTOR DOSSIER
+   ══════════════════════════════════════════════════════════ */
+const ACTOR_DOSSIERS = [
+  { flag:'🇷🇺', name:'APT28 / Fancy Bear', aliases:'Sofacy · STRONTIUM · Pawn Storm',
+    activeSince:'2004', confidence:91, sectors:['Government','Defense','Energy'],
+    ttps:['T1566 Phishing','T1190 Exploit Public App','T1078 Valid Accounts','T1059 Command Scripting'],
+    tools:['X-Agent','Zebrocy','LoJax','Sofacy'],
+    campaigns:['Operation Grizzly Steppe (2016)','VPNFilter (2018)','UAC-0028 (2023)'] },
+  { flag:'🇰🇵', name:'Lazarus Group', aliases:'Hidden Cobra · APT38 · Zinc',
+    activeSince:'2009', confidence:87, sectors:['Finance','Crypto','Defense'],
+    ttps:['T1059 PowerShell','T1566 Spear Phishing','T1486 Data Encryption','T1190 Exploit'],
+    tools:['AppleJeus','BLINDINGCAN','HOPLIGHT'],
+    campaigns:['WannaCry (2017)','Bangladesh Bank Heist (2016)','3CX Supply Chain (2023)'] },
+  { flag:'🇨🇳', name:'APT41 / Double Dragon', aliases:'Winnti · Barium · Wicked Panda',
+    activeSince:'2012', confidence:85, sectors:['Healthcare','Telecom','Gaming'],
+    ttps:['T1195 Supply Chain','T1036 Masquerading','T1071 Web Protocols','T1560 Archive Data'],
+    tools:['POISONPLUG','CROSSWALK','ShadowPad'],
+    campaigns:['SolarWinds Adjacent (2020)','Citrix ADC Exploit (2019)','COVID-19 Research Theft (2020)'] },
+  { flag:'🇮🇷', name:'APT33 / Elfin', aliases:'Refined Kitten · Magnallium',
+    activeSince:'2013', confidence:80, sectors:['Energy','Aviation','Military'],
+    ttps:['T1566 Phishing','T1204 User Execution','T1048 Exfiltration','T1070 Indicator Removal'],
+    tools:['SHAPESHIFT','TURNEDUP','NotPetya-variant'],
+    campaigns:['Shamoon 2.0 (2016)','Saudi Aramco Targeting (2017)','Triton ICS (2017)'] },
+  { flag:'🇧🇾', name:'UNC1151 / Ghostwriter', aliases:'Minsk Threat Group',
+    activeSince:'2017', confidence:72, sectors:['Government','Media','NGO'],
+    ttps:['T1566 Phishing','T1195 Compromise Infrastructure','T1059 Scripting','T1036 Masquerade'],
+    tools:['Cobalt Strike','Meterpreter','Custom PowerShell'],
+    campaigns:['Ghostwriter Influence Ops (2020)','NATO Narrative Ops (2021)','Belarusian Disinformation (2022)'] },
+  { flag:'🇨🇳', name:'APT10 / Stone Panda', aliases:'MenuPass · Red Apollo · Potassium',
+    activeSince:'2009', confidence:88, sectors:['MSP','Manufacturing','Healthcare'],
+    ttps:['T1199 Trusted Relationship','T1078 Valid Accounts','T1105 Remote File Copy','T1003 Credential Dump'],
+    tools:['PlugX','QuasarRAT','RedLeaves','ANEL'],
+    campaigns:['Cloud Hopper (2016)','Operation Soft Cell (2019)','MSP Campaign (2023)'] },
+  { flag:'🇺🇦', name:'Sandworm / Voodoo Bear', aliases:'Iridium · TeleBots · BlackEnergy',
+    activeSince:'2009', confidence:94, sectors:['Energy','Government','Critical Infrastructure'],
+    ttps:['T1485 Data Destruction','T1490 Inhibit Recovery','T1016 System Network Discovery'],
+    tools:['NotPetya','Industroyer','Cyclops Blink','BlackEnergy3'],
+    campaigns:['Ukraine Power Grid (2015/2016)','NotPetya (2017)','Viasat Hack (2022)'] },
+  { flag:'🇧🇷', name:'LAPSUS$ Group', aliases:'DEV-0537 · Strawberry Tempest',
+    activeSince:'2021', confidence:66, sectors:['Tech','Telecom','Crypto'],
+    ttps:['T1078 Valid Accounts','T1539 Cookie Theft','T1621 MFA Bypass','T1530 Data from Cloud'],
+    tools:['Redline Stealer','NightHawk C2','Custom exfil tools'],
+    campaigns:['Microsoft Source Code (2022)','Okta Breach (2022)','NVIDIA Extortion (2022)'] },
+  { flag:'🌐', name:'TA505 / FIN11', aliases:'Cl0p Ransomware Group · Evil Corp Adjacent',
+    activeSince:'2014', confidence:77, sectors:['Financial','Healthcare','Retail'],
+    ttps:['T1566 Mass Phishing','T1190 Exploit (MOVEit)','T1486 Ransomware','T1041 Exfil C2'],
+    tools:['Cl0p','Dridex','FlawedAmmyy','ServHelper'],
+    campaigns:['MOVEit Mass Exploitation (2023)','Accellion FTA (2020)','Dridex Banking Campaigns'] },
+];
+function openActor(regionIdx) {
+  if (regionIdx === undefined || regionIdx === null) return;
+  const d = ACTOR_DOSSIERS[regionIdx % ACTOR_DOSSIERS.length]; if (!d) return;
+  $('actorFlag').textContent = d.flag;
+  $('actorName').textContent = d.name;
+  $('actorAlias').textContent = d.aliases;
+  $('actorBody').innerHTML =
+    '<div class="actor-sec-title">Active Since</div>' +
+    '<div style="font-family:var(--mono);color:var(--text)">' + d.activeSince + '&nbsp;&nbsp;<span style="color:' + (d.confidence > 75 ? 'var(--danger)' : d.confidence > 50 ? 'var(--warn)' : 'var(--accent)') + '">' + d.confidence + '% confidence</span></div>' +
+    '<div class="actor-sec-title">Primary TTPs</div><div>' + d.ttps.map(t => '<span class="actor-ttp">' + t + '</span>').join('') + '</div>' +
+    '<div class="actor-sec-title">Known Tooling</div><div>' + d.tools.map(t => '<span class="actor-tool">' + t + '</span>').join('') + '</div>' +
+    '<div class="actor-sec-title">Target Sectors</div><div style="font-size:var(--fs-xs);color:var(--muted);margin-top:3px">' + d.sectors.join(' \u00b7 ') + '</div>' +
+    '<div class="actor-sec-title">Recent Campaigns</div>' + d.campaigns.map(c => '<div class="actor-campaign">' + c + '</div>').join('');
+  $('actorOverlay').classList.add('open');
+}
+function closeActor() { $('actorOverlay').classList.remove('open'); }
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE 1: LATERAL MOVEMENT GRAPH
+   ══════════════════════════════════════════════════════════ */
+let lmNodes = [], lmEdges = [], lmRaf = null;
+const LM_SEV_COL = { crit:'#f04545', high:'#f5a623', med:'#38b6ff', accent:'#00e5a0' };
+
+function buildLMGraph() {
+  const cv = $('lmCanvas'); if (!cv) return;
+  const W = cv.offsetWidth || 400, H = cv.offsetHeight || 130;
+  const nodeMap = new Map();
+  lmEdges = [];
+  getVisible().forEach(a => {
+    const src = a.src.split(':')[0], dst = a.dst.split('/')[0];
+    if (!nodeMap.has(src)) nodeMap.set(src, { id:src, label:src.split('.').slice(-2).join('.'), sev:a.sev, x:50+Math.random()*(W-100), y:25+Math.random()*(H-50), vx:0, vy:0, hits:0 });
+    if (!nodeMap.has(dst)) nodeMap.set(dst, { id:dst, label:dst.split('.').slice(-2).join('.'), sev:'med', x:50+Math.random()*(W-100), y:25+Math.random()*(H-50), vx:0, vy:0, hits:0 });
+    const sn = nodeMap.get(src);
+    sn.hits++;
+    if (a.sev === 'crit') sn.sev = 'crit';
+    else if (a.sev === 'high' && sn.sev !== 'crit') sn.sev = 'high';
+    lmEdges.push({ src, dst, tactic: a.mitre[0] || '', sev: a.sev });
+  });
+  if (!nodeMap.has('HQ')) nodeMap.set('HQ', { id:'HQ', label:'HQ', sev:'accent', x:W/2, y:H/2, vx:0, vy:0, hits:99 });
+  lmNodes = [...nodeMap.values()];
+  const nc = $('lmNodeCount'); if (nc) nc.textContent = (lmNodes.length - 1) + ' nodes' + (lmFilter ? ' \u00b7 filtered: ' + lmFilter : '') + ' \u00b7 click node to filter';
+}
+
+function tickLM() {
+  const cv = $('lmCanvas'); if (!cv) { lmRaf = null; return; }
+  const W = cv.offsetWidth, H = cv.offsetHeight;
+  if (W === 0 || H === 0) { lmRaf = requestAnimationFrame(tickLM); return; }
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  lmNodes.forEach(n => {
+    n.vx += (W / 2 - n.x) * 0.0008;
+    n.vy += (H / 2 - n.y) * 0.0008;
+    lmNodes.forEach(m => {
+      if (m === n) return;
+      const dx = n.x - m.x, dy = n.y - m.y, d = Math.sqrt(dx*dx + dy*dy) || 1;
+      const f = 500 / (d * d);
+      n.vx += dx/d*f; n.vy += dy/d*f;
+    });
+    n.vx *= 0.82; n.vy *= 0.82;
+    n.x = Math.max(20, Math.min(W-20, n.x + n.vx));
+    n.y = Math.max(14, Math.min(H-14, n.y + n.vy));
+  });
+  lmEdges.forEach(e => {
+    const s = lmNodes.find(n => n.id === e.src), t = lmNodes.find(n => n.id === e.dst);
+    if (!s || !t) return;
+    const dx = t.x - s.x, dy = t.y - s.y, d = Math.sqrt(dx*dx + dy*dy) || 1;
+    const f = (d - 80) * 0.035;
+    s.vx += dx/d*f; s.vy += dy/d*f;
+    t.vx -= dx/d*f; t.vy -= dy/d*f;
+  });
+  ctx.clearRect(0, 0, W, H);
+  lmEdges.forEach(e => {
+    const s = lmNodes.find(n => n.id === e.src), t = lmNodes.find(n => n.id === e.dst);
+    if (!s || !t) return;
+    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(t.x, t.y);
+    ctx.strokeStyle = (LM_SEV_COL[e.sev] || '#38b6ff') + '55'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#4d7a9a'; ctx.font = '8px monospace';
+    const mx = (s.x + t.x) / 2, my = (s.y + t.y) / 2;
+    ctx.fillText(e.tactic.slice(0, 10), mx, my - 2);
+  });
+  lmNodes.forEach(n => {
+    const r = n.id === 'HQ' ? 8 : 4 + Math.min(n.hits, 4);
+    const col = LM_SEV_COL[n.sev] || '#38b6ff';
+    ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = col + '28'; ctx.fill();
+    ctx.strokeStyle = col; ctx.lineWidth = lmFilter === n.id ? 2.5 : 1; ctx.stroke();
+    ctx.fillStyle = lmFilter === n.id ? '#fff' : '#cfe3f0'; ctx.font = '8px monospace';
+    ctx.fillText(n.label, n.x + r + 2, n.y + 3);
+  });
+  lmRaf = requestAnimationFrame(tickLM);
+}
+
+function startLM() {
+  if (lmRaf) { cancelAnimationFrame(lmRaf); lmRaf = null; }
+  buildLMGraph();
+  if (lmNodes.length > 0) tickLM();
+}
+
+function initLM() {
+  const cv = $('lmCanvas'); if (!cv) return;
+  cv.addEventListener('click', e => {
+    const rect = cv.getBoundingClientRect();
+    const scaleX = cv.width / rect.width, scaleY = cv.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+    const hit = lmNodes.find(n => { const dx = n.x - mx, dy = n.y - my; return Math.sqrt(dx*dx + dy*dy) < 12; });
+    lmFilter = (hit && hit.id !== 'HQ') ? (lmFilter === hit.id ? null : hit.id) : null;
+    renderAlerts();
+  });
+}
+
+/* ── INIT ── */
+ALERTS.forEach(a => { correlateIncident(a); addIOC(a); tlPush(a.id, a.sev); });
+updateIncidentCount();
+renderAnalysts();
+renderAlerts();
+updateCritCount();
+updateSLATimers();
+updateSOCMetrics();
+drawSpark();
+initMap();
+renderCVE(0);
+drawRadar();
+drawTimeline();
+initLM();
+
+/* ── DONUT CANVAS MOUSE HANDLERS ── */
+(function() {
+  const cv = $('donutCanvas');
+  if (!cv) return;
+  cv.style.cursor = 'default';
+  cv.addEventListener('mousemove', e => {
+    const rect = cv.getBoundingClientRect();
+    const cx2 = rect.width / 2, cy2 = rect.height / 2;
+    const dx = e.clientX - rect.left - cx2, dy = e.clientY - rect.top - cy2;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const R2 = rect.width * 0.40, inner = R2 * 0.52;
+    if (dist > inner && dist < R2) {
+      let angle = Math.atan2(dy, dx) + Math.PI / 2;
+      if (angle < 0) angle += Math.PI * 2;
+      hoveredSlice = getSliceAtAngle(angle);
+      cv.style.cursor = hoveredSlice ? 'pointer' : 'default';
+    } else {
+      hoveredSlice = null; cv.style.cursor = 'default';
+    }
+    drawDonut();
+  });
+  cv.addEventListener('mouseleave', () => { hoveredSlice = null; drawDonut(); });
+  cv.addEventListener('click', () => {
+    if (hoveredSlice) {
+      activeFilter = (activeFilter === hoveredSlice) ? 'all' : hoveredSlice;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === activeFilter));
+      selectedIdx = -1; renderAlerts();
+    }
+  });
+})();
+
+/* ── SPARKLINE MOUSE HANDLERS ── */
+(function() {
+  const cv = $('sparkCanvas');
+  if (!cv) return;
+  cv.addEventListener('mousemove', e => {
+    const rect = cv.getBoundingClientRect();
+    sparkHoverX = (e.clientX - rect.left) / rect.width;
+    drawSpark();
+  });
+  cv.addEventListener('mouseleave', () => { sparkHoverX = -1; drawSpark(); });
+})();
+</script>
+
+<div id="mapTooltip" style="position:fixed;display:none;pointer-events:none;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:7px 11px;font-family:var(--mono);font-size:var(--fs-xs);z-index:500;min-width:150px;box-shadow:0 4px 20px rgba(0,0,0,0.6);line-height:1.6;"></div>
+
+<!-- ACTOR DOSSIER OVERLAY -->
+<div class="actor-overlay" id="actorOverlay" onclick="closeActor()">
+  <div class="actor-panel" onclick="event.stopPropagation()">
+    <div class="actor-hdr">
+      <span class="actor-flag" id="actorFlag"></span>
+      <div style="flex:1;min-width:0;">
+        <div class="actor-name" id="actorName"></div>
+        <div class="actor-alias" id="actorAlias"></div>
+      </div>
+      <button class="actor-close-btn" onclick="closeActor()">✕ Close</button>
+    </div>
+    <div id="actorBody"></div>
+  </div>
+</div>
+</body>
+</html>
